@@ -1,0 +1,14 @@
+{
+  "name": "capital-system",
+  "version": "1.0.0",
+  "description": "Capital System — Full Stack Investment Platform",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "setup:db": "cd backend && node src/scripts/initdb.js",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start"
+  },
+  "devDependencies": {}
+}
