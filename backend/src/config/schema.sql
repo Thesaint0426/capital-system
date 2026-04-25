@@ -1,3 +1,4 @@
+SET client_min_messages TO WARNING;
 -- Capital System Database Schema
 
 CREATE TABLE IF NOT EXISTS users (
