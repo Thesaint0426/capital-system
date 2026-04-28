@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const pool = require('./config/database');
+const { startKeepAlive } = require('./keepalive');
 
 const app = express();
 
@@ -29,7 +30,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 async function initDB() {
   try {
@@ -57,6 +58,7 @@ async function start() {
   await initDB();
   app.listen(PORT, () => {
     console.log(`🚀 Capital System API running on http://localhost:${PORT}`);
+    startKeepAlive();
   });
 }
 
