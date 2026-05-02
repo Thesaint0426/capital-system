@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { withAuth, useAuth } from '../../lib/auth';
 import Sidebar from '../../components/Sidebar';
 import api from '../../lib/api';
-import { formatCurrency, formatDate, daysRemaining, cycleProgress } from '../../lib/format';
+import { fmt, fmtDate, daysLeft, cyclePct, sign } from '../../lib/format';
 import {
-  Chart as ChartJS,
-  CategoryScale, LinearScale, PointElement, LineElement,
-  Tooltip, Filler,
+  Chart as ChartJS, CategoryScale, LinearScale,
+  PointElement, LineElement, Tooltip, Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -15,42 +15,33 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip,
 function Dashboard() {
   const { user } = useAuth();
   const [account, setAccount] = useState(null);
-  const [cycles, setCycles] = useState({ activeCycle: null, lastCycle: null, completedCycles: [] });
+  const [cycles, setCycles] = useState({ activeCycle: null, lastCycle: null, completedCycles: [], allCycles: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [accRes, cycRes] = await Promise.all([
-          api.get('/api/investor/account'),
-          api.get('/api/investor/cycles'),
-        ]);
-        setAccount(accRes.data);
-        setCycles(cycRes.data);
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to load account');
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    Promise.all([
+      api.get('/api/investor/account'),
+      api.get('/api/investor/cycles'),
+    ]).then(([a, c]) => {
+      setAccount(a.data);
+      setCycles(c.data);
+    }).catch(err => {
+      setError(err.response?.data?.error || 'Failed to load account data');
+    }).finally(() => setLoading(false));
   }, []);
 
-  // Build chart data from completed cycles
   const chartData = (() => {
-    const completed = [...(cycles.completedCycles || [])].reverse();
-    if (completed.length === 0) return null;
-    const labels = completed.map((c, i) => `Cycle ${i + 1}`);
-    const data = completed.map(c => parseFloat(c.result_amount) - parseFloat(c.amount));
+    const done = [...(cycles.completedCycles || [])].reverse();
+    if (!done.length) return null;
     return {
-      labels,
+      labels: done.map((_, i) => `Cycle ${i + 1}`),
       datasets: [{
-        data,
-        borderColor: '#00ff88',
-        backgroundColor: 'rgba(0,255,136,0.05)',
-        borderWidth: 2,
-        pointBackgroundColor: data.map(v => v >= 0 ? '#00ff88' : '#ff4d4d'),
+        data: done.map(c => parseFloat(c.profit_loss || 0)),
+        borderColor: '#c8a96e',
+        backgroundColor: 'rgba(200,169,110,0.06)',
+        borderWidth: 1.5,
+        pointBackgroundColor: done.map(c => parseFloat(c.profit_loss) >= 0 ? '#3ecf8e' : '#f87171'),
         pointRadius: 4,
         fill: true,
         tension: 0.4,
@@ -60,180 +51,178 @@ function Dashboard() {
 
   const chartOptions = {
     responsive: true,
-    plugins: { legend: { display: false }, tooltip: {
-      backgroundColor: '#111',
-      borderColor: '#2a2a2a',
-      borderWidth: 1,
-      titleColor: '#666',
-      bodyColor: '#f0f0f0',
-      callbacks: {
-        label: (ctx) => ` ${ctx.raw >= 0 ? '+' : ''}${formatCurrency(ctx.raw)}`,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0c0c0c',
+        borderColor: '#252525',
+        borderWidth: 1,
+        titleColor: '#524f4b',
+        bodyColor: '#f5f3ef',
+        padding: 10,
+        callbacks: { label: ctx => ` ${ctx.raw >= 0 ? '+' : ''}${fmt(ctx.raw)}` },
       },
-    }},
+    },
     scales: {
-      x: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 11 } } },
-      y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 11 }, callback: v => formatCurrency(v) } },
+      x: { grid: { color: '#141414' }, ticks: { color: '#3a3734', font: { size: 10, family: 'Space Mono' } } },
+      y: { grid: { color: '#141414' }, ticks: { color: '#3a3734', font: { size: 10 }, callback: v => fmt(v) } },
     },
   };
 
+  const totalProfit = parseFloat(account?.total_profit || 0);
+  const balance = parseFloat(account?.current_balance || 0);
+  const initial = parseFloat(account?.initial_deposit || 0);
+  const returnPct = initial > 0 ? ((totalProfit / initial) * 100).toFixed(2) : '0.00';
+
   if (loading) return (
-    <div className="page-layout">
-      <Sidebar />
-      <main className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="spinner" />
-      </main>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808', flexDirection: 'column', gap: 16 }}>
+      <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 700, letterSpacing: '0.08em', color: '#3a3734', textTransform: 'uppercase' }}>Capital<span style={{ color: '#c8a96e' }}>Invest</span></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
   return (
-    <div className="page-layout">
-      <Sidebar />
-      <main className="main-content">
-        <div className="page-header">
-          <h1 className="page-title">Dashboard</h1>
-          <p className="page-subtitle">Welcome back, {user?.name}</p>
-        </div>
+    <>
+      <Head><title>Dashboard — Capital Invest</title></Head>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope, sans-serif', color: '#f5f3ef' }}>
+        <Sidebar />
+        <main style={{ marginLeft: 220, flex: 1, padding: '40px', minHeight: '100vh' }}>
 
-        {error && <div className="alert alert-error">{error}</div>}
-
-        {!account && !error && (
-          <div className="alert alert-info">
-            Your investment account has not been activated yet. Please contact your administrator.
-          </div>
-        )}
-
-        {account && (
-          <>
-            {/* Stats */}
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-label">Current Balance</div>
-                <div className="stat-value mono">{formatCurrency(account.current_balance)}</div>
-                <div className="stat-sub">Available funds</div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-label">Initial Deposit</div>
-                <div className="stat-value mono" style={{ color: 'var(--text-muted)' }}>
-                  {formatCurrency(account.initial_deposit)}
-                </div>
-                <div className="stat-sub">Starting capital</div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-label">Total Profit / Loss</div>
-                <div className={`stat-value mono ${parseFloat(account.total_profit) >= 0 ? 'positive' : 'negative'}`}>
-                  {parseFloat(account.total_profit) >= 0 ? '+' : ''}{formatCurrency(account.total_profit)}
-                </div>
-                <div className="stat-sub">
-                  {account.initial_deposit > 0
-                    ? `${((parseFloat(account.total_profit) / parseFloat(account.initial_deposit)) * 100).toFixed(2)}% return`
-                    : '—'}
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-label">Completed Cycles</div>
-                <div className="stat-value mono">{cycles.completedCycles?.length || 0}</div>
-                <div className="stat-sub">Investment rounds</div>
-              </div>
+          {/* Header */}
+          <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>
+                Member Dashboard
+              </h1>
+              <div style={{ fontSize: 13, color: '#524f4b' }}>Welcome back, {user?.name}</div>
             </div>
+            {cycles.activeCycle && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: 'rgba(62,207,142,0.06)', border: '1px solid rgba(62,207,142,0.12)', borderRadius: 20, fontSize: 11, fontWeight: 700, color: '#3ecf8e', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <div style={{ width: 5, height: 5, background: '#3ecf8e', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
+                Active Cycle
+              </div>
+            )}
+          </div>
 
-            {/* Active Cycle */}
-            <div className="section">
-              <div className="section-title">Active Cycle</div>
-              {cycles.activeCycle ? (
-                <div className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                        <span className="badge badge-active">Active</span>
-                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                          {daysRemaining(cycles.activeCycle.end_date)} days remaining
-                        </span>
-                      </div>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700 }}>
-                        {formatCurrency(cycles.activeCycle.amount)}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-                        Invested amount
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right', fontSize: 13, color: 'var(--text-muted)' }}>
-                      <div>{formatDate(cycles.activeCycle.start_date)}</div>
-                      <div style={{ fontSize: 11, marginTop: 2 }}>→ {formatDate(cycles.activeCycle.end_date)}</div>
-                    </div>
+          {error && <div style={{ padding: '12px 16px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: 8, fontSize: 13, color: '#f87171', marginBottom: 24 }}>{error}</div>}
+
+          {!account && !error && (
+            <div style={{ padding: '16px 20px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 8, fontSize: 13, color: '#c8a96e', marginBottom: 24 }}>
+              Your account is pending activation. Our team will notify you once your allocation has been configured.
+            </div>
+          )}
+
+          {account && (
+            <>
+              {/* Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 28 }}>
+                {[
+                  { label: 'Current Balance', value: fmt(balance), sub: 'Available allocation', color: '#f5f3ef' },
+                  { label: 'Initial Allocation', value: fmt(initial), sub: 'Fixed entry amount', color: '#8b8680' },
+                  { label: 'Total Performance', value: `${sign(totalProfit)}${fmt(totalProfit)}`, sub: `${returnPct}% return`, color: totalProfit >= 0 ? '#3ecf8e' : '#f87171' },
+                  { label: 'Completed Cycles', value: cycles.completedCycles?.length || 0, sub: 'Historical rounds', color: '#c8a96e' },
+                ].map((s, i) => (
+                  <div key={i} style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: '18px 20px', transition: 'border-color 0.15s' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>{s.label}</div>
+                    <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', color: s.color }}>{s.value}</div>
+                    <div style={{ fontSize: 11, color: '#3a3734', marginTop: 6 }}>{s.sub}</div>
                   </div>
+                ))}
+              </div>
 
-                  <div style={{ marginBottom: 8 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>
-                      <span>Progress</span>
-                      <span>{Math.round(cycleProgress(cycles.activeCycle.start_date, cycles.activeCycle.end_date))}%</span>
+              {/* Active Cycle + Last Result */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 28 }}>
+                {/* Active Cycle */}
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>Active Cycle</div>
+                  {cycles.activeCycle ? (
+                    <div style={{ background: '#0c0c0c', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 12, padding: 22 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
+                        <div>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'rgba(200,169,110,0.08)', border: '1px solid rgba(200,169,110,0.12)', borderRadius: 20, fontSize: 9, fontWeight: 700, color: '#c8a96e', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+                            ● Active
+                          </div>
+                          <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 26, fontWeight: 700, color: '#c8a96e' }}>{fmt(cycles.activeCycle.amount)}</div>
+                          <div style={{ fontSize: 11, color: '#3a3734', marginTop: 4 }}>Under management</div>
+                        </div>
+                        <div style={{ textAlign: 'right', fontSize: 12, color: '#524f4b' }}>
+                          <div style={{ fontSize: 18, fontWeight: 700, color: '#f5f3ef', fontFamily: 'Space Mono,monospace' }}>{daysLeft(cycles.activeCycle.end_date)}</div>
+                          <div style={{ fontSize: 10, color: '#3a3734', marginTop: 1, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Days Left</div>
+                        </div>
+                      </div>
+                      <div style={{ marginBottom: 6, display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#3a3734' }}>
+                        <span style={{ textTransform: 'uppercase', letterSpacing: '0.06em' }}>Cycle Progress</span>
+                        <span>{Math.round(cyclePct(cycles.activeCycle.start_date, cycles.activeCycle.end_date))}%</span>
+                      </div>
+                      <div style={{ height: 3, background: '#1e1e1e', borderRadius: 2, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${cyclePct(cycles.activeCycle.start_date, cycles.activeCycle.end_date)}%`, background: 'linear-gradient(90deg,#c8a96e,#3ecf8e)', borderRadius: 2, transition: 'width 0.6s ease' }}></div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#3a3734', marginTop: 8 }}>
+                        <span>{fmtDate(cycles.activeCycle.start_date)}</span>
+                        <span>{fmtDate(cycles.activeCycle.end_date)}</span>
+                      </div>
+                      {cycles.activeCycle.notes && (
+                        <div style={{ marginTop: 14, padding: '10px 12px', background: '#080808', borderRadius: 7, fontSize: 12, color: '#524f4b', fontStyle: 'italic' }}>
+                          {cycles.activeCycle.notes}
+                        </div>
+                      )}
                     </div>
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: `${cycleProgress(cycles.activeCycle.start_date, cycles.activeCycle.end_date)}%` }} />
-                    </div>
-                  </div>
-
-                  {cycles.activeCycle.notes && (
-                    <div style={{ marginTop: 16, fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                      {cycles.activeCycle.notes}
+                  ) : (
+                    <div style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: 32, textAlign: 'center', color: '#3a3734', fontSize: 13 }}>
+                      No active cycle. Your next cycle will be initiated by our team.
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="card" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
-                  No active investment cycle. Your admin will start the next cycle.
-                </div>
-              )}
-            </div>
 
-            {/* Last Cycle Result */}
-            {cycles.lastCycle && (
-              <div className="section">
-                <div className="section-title">Last Cycle Result</div>
-                <div className="card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <span className="badge badge-completed" style={{ marginBottom: 10, display: 'inline-flex' }}>Completed</span>
-                      <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
-                        <div>
-                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Invested</div>
-                          <div className="mono" style={{ fontSize: 18, fontWeight: 700 }}>{formatCurrency(cycles.lastCycle.amount)}</div>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Result</div>
-                          <div className="mono" style={{ fontSize: 18, fontWeight: 700 }}>{formatCurrency(cycles.lastCycle.result_amount)}</div>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>P/L</div>
-                          <div className={`mono ${parseFloat(cycles.lastCycle.profit_loss) >= 0 ? 'positive' : 'negative'}`} style={{ fontSize: 18, fontWeight: 700 }}>
-                            {parseFloat(cycles.lastCycle.profit_loss) >= 0 ? '+' : ''}{formatCurrency(cycles.lastCycle.profit_loss)}
-                          </div>
-                        </div>
+                {/* Last Result */}
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>Last Cycle Result</div>
+                  {cycles.lastCycle ? (
+                    <div style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: 22 }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 20, fontSize: 9, fontWeight: 700, color: '#60a5fa', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>
+                        Completed
                       </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                        {[
+                          { label: 'Allocated', value: fmt(cycles.lastCycle.amount), color: '#8b8680' },
+                          { label: 'Result', value: fmt(cycles.lastCycle.result_amount), color: '#f5f3ef' },
+                          { label: 'Performance', value: `${sign(cycles.lastCycle.profit_loss)}${fmt(cycles.lastCycle.profit_loss)}`, color: parseFloat(cycles.lastCycle.profit_loss) >= 0 ? '#3ecf8e' : '#f87171' },
+                        ].map((m, i) => (
+                          <div key={i}>
+                            <div style={{ fontSize: 10, color: '#3a3734', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{m.label}</div>
+                            <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 15, fontWeight: 700, color: m.color }}>{m.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 16, fontSize: 11, color: '#3a3734' }}>Closed {fmtDate(cycles.lastCycle.closed_at)}</div>
+                      {cycles.lastCycle.notes && (
+                        <div style={{ marginTop: 10, padding: '10px 12px', background: '#080808', borderRadius: 7, fontSize: 12, color: '#524f4b', fontStyle: 'italic' }}>{cycles.lastCycle.notes}</div>
+                      )}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      Closed {formatDate(cycles.lastCycle.closed_at)}
+                  ) : (
+                    <div style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: 32, textAlign: 'center', color: '#3a3734', fontSize: 13 }}>
+                      No completed cycles yet.
                     </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Chart */}
+              {chartData && (
+                <div style={{ marginBottom: 28 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>Performance History</div>
+                  <div style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: 22 }}>
+                    <Line data={chartData} options={chartOptions} height={70} />
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Performance Chart */}
-            {chartData && (
-              <div className="section">
-                <div className="section-title">Cycle Performance</div>
-                <div className="card">
-                  <Line data={chartData} options={chartOptions} height={80} />
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </main>
-    </div>
+              )}
+            </>
+          )}
+        </main>
+      </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
+    </>
   );
 }
 

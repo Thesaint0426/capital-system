@@ -1,144 +1,212 @@
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { withAuth } from '../../lib/auth';
 import Sidebar from '../../components/Sidebar';
 import api from '../../lib/api';
-import { formatCurrency } from '../../lib/format';
+import { fmt, fmtDate } from '../../lib/format';
 
 function AdminOverview() {
-  const [users, setUsers] = useState([]);
+  const [members, setMembers] = useState([]);
   const [cycles, setCycles] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [uRes, cRes, wRes] = await Promise.all([
-          api.get('/api/admin/users'),
-          api.get('/api/admin/cycles'),
-          api.get('/api/admin/withdrawals'),
-        ]);
-        setUsers(uRes.data);
-        setCycles(cRes.data);
-        setWithdrawals(wRes.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    Promise.all([
+      api.get('/api/admin/users'),
+      api.get('/api/admin/cycles'),
+      api.get('/api/admin/withdrawals'),
+      api.get('/api/admin/applications').catch(() => ({ data: [] })),
+    ]).then(([m, c, w, a]) => {
+      setMembers(m.data);
+      setCycles(c.data);
+      setWithdrawals(w.data);
+      setApplications(a.data);
+    }).finally(() => setLoading(false));
   }, []);
 
-  const totalAUM = users.reduce((s, u) => s + parseFloat(u.current_balance || 0), 0);
-  const totalProfit = users.reduce((s, u) => s + parseFloat(u.total_profit || 0), 0);
+  const totalAUM = members.reduce((s, u) => s + parseFloat(u.current_balance || 0), 0);
+  const totalProfit = members.reduce((s, u) => s + parseFloat(u.total_profit || 0), 0);
   const activeCycles = cycles.filter(c => c.status === 'active').length;
-  const pendingWithdrawals = withdrawals.filter(w => w.status === 'pending').length;
+  const pendingW = withdrawals.filter(w => w.status === 'pending').length;
+  const pendingApps = applications.filter(a => a.status === 'pending').length;
 
   if (loading) return (
-    <div className="page-layout">
-      <Sidebar />
-      <main className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="spinner" />
-      </main>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
+  const KPIs = [
+    { label: 'Total AUM', value: fmt(totalAUM), sub: 'Assets under management', color: '#c8a96e' },
+    { label: 'Total Performance', value: `${totalProfit >= 0 ? '+' : ''}${fmt(totalProfit)}`, sub: 'Across all members', color: totalProfit >= 0 ? '#3ecf8e' : '#f87171' },
+    { label: 'Active Members', value: members.length, sub: 'Activated accounts', color: '#f5f3ef' },
+    { label: 'Active Cycles', value: activeCycles, sub: 'Running now', color: '#c8a96e' },
+    { label: 'Pending Withdrawals', value: pendingW, sub: 'Awaiting approval', color: pendingW > 0 ? '#f87171' : '#3a3734' },
+    { label: 'Pending Applications', value: pendingApps, sub: 'Under review', color: pendingApps > 0 ? '#c8a96e' : '#3a3734' },
+  ];
+
   return (
-    <div className="page-layout">
-      <Sidebar />
-      <main className="main-content">
-        <div className="page-header">
-          <h1 className="page-title">Admin Overview</h1>
-          <p className="page-subtitle">System-wide performance snapshot</p>
-        </div>
+    <>
+      <Head><title>Admin Overview — Capital Invest</title></Head>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope,sans-serif', color: '#f5f3ef' }}>
+        <Sidebar />
+        <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
 
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-label">Total AUM</div>
-            <div className="stat-value mono positive">{formatCurrency(totalAUM)}</div>
-            <div className="stat-sub">Assets under management</div>
+          <div style={{ marginBottom: 32 }}>
+            <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Admin Overview</h1>
+            <div style={{ fontSize: 13, color: '#524f4b' }}>Platform performance snapshot</div>
           </div>
-          <div className="stat-card">
-            <div className="stat-label">Total Profit Paid</div>
-            <div className={`stat-value mono ${totalProfit >= 0 ? 'positive' : 'negative'}`}>
-              {totalProfit >= 0 ? '+' : ''}{formatCurrency(totalProfit)}
+
+          {/* Alerts */}
+          {pendingW > 0 && (
+            <div style={{ padding: '11px 16px', background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: 8, fontSize: 12, color: '#f87171', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              ⚠ {pendingW} withdrawal request{pendingW > 1 ? 's' : ''} pending your review
             </div>
-            <div className="stat-sub">Across all investors</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Active Investors</div>
-            <div className="stat-value mono">{users.length}</div>
-            <div className="stat-sub">Registered accounts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Active Cycles</div>
-            <div className="stat-value mono" style={{ color: 'var(--accent)' }}>{activeCycles}</div>
-            <div className="stat-sub">Running now</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Pending Withdrawals</div>
-            <div className="stat-value mono" style={{ color: pendingWithdrawals > 0 ? 'var(--yellow)' : 'var(--text-muted)' }}>
-              {pendingWithdrawals}
+          )}
+          {pendingApps > 0 && (
+            <div style={{ padding: '11px 16px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 8, fontSize: 12, color: '#c8a96e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              ◈ {pendingApps} membership application{pendingApps > 1 ? 's' : ''} awaiting review
             </div>
-            <div className="stat-sub">Awaiting approval</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Total Cycles</div>
-            <div className="stat-value mono">{cycles.length}</div>
-            <div className="stat-sub">All time</div>
-          </div>
-        </div>
+          )}
 
-        {/* Recent Activity */}
-        {pendingWithdrawals > 0 && (
-          <div className="alert" style={{ background: 'rgba(255,213,79,0.08)', border: '1px solid rgba(255,213,79,0.2)', color: 'var(--yellow)' }}>
-            ⚠ {pendingWithdrawals} withdrawal request{pendingWithdrawals > 1 ? 's' : ''} pending your review
+          {/* KPI Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 32 }}>
+            {KPIs.map((k, i) => (
+              <div key={i} style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: '18px 20px' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>{k.label}</div>
+                <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', color: k.color }}>{k.value}</div>
+                <div style={{ fontSize: 11, color: '#3a3734', marginTop: 6 }}>{k.sub}</div>
+              </div>
+            ))}
           </div>
-        )}
 
-        {/* Recent Investors */}
-        <div className="section">
-          <div className="section-title">Recent Investors</div>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Balance</th>
-                  <th>Profit/Loss</th>
-                  <th>Active Cycle</th>
-                  <th>Pending W/D</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.slice(0, 10).map(u => (
-                  <tr key={u.id}>
-                    <td style={{ fontWeight: 600 }}>{u.name}</td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{u.email}</td>
-                    <td className="mono">{u.current_balance !== null ? formatCurrency(u.current_balance) : <span style={{ color: 'var(--text-dim)' }}>No account</span>}</td>
-                    <td className={`mono ${parseFloat(u.total_profit || 0) >= 0 ? 'positive' : 'negative'}`}>
-                      {u.total_profit !== null ? `${parseFloat(u.total_profit) >= 0 ? '+' : ''}${formatCurrency(u.total_profit)}` : '—'}
-                    </td>
-                    <td>
-                      {parseInt(u.active_cycles) > 0
-                        ? <span className="badge badge-active">Yes</span>
-                        : <span style={{ color: 'var(--text-dim)', fontSize: 13 }}>None</span>}
-                    </td>
-                    <td>
-                      {parseInt(u.pending_withdrawals) > 0
-                        ? <span className="badge badge-pending">{u.pending_withdrawals}</span>
-                        : <span style={{ color: 'var(--text-dim)', fontSize: 13 }}>—</span>}
-                    </td>
+          {/* Members Table */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Member Accounts ({members.length})</div>
+            <div style={{ border: '1px solid #1e1e1e', borderRadius: 12, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#0a0a0a', borderBottom: '1px solid #1e1e1e' }}>
+                    {['Member', 'Balance', 'Performance', 'Active Cycle', 'Pending W/D'].map(h => (
+                      <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {members.map(m => (
+                    <tr key={m.id} style={{ borderBottom: '1px solid #141414', transition: 'background 0.12s' }}
+                      onMouseOver={e => e.currentTarget.style.background = '#0a0a0a'}
+                      onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                      <td style={{ padding: '13px 14px' }}>
+                        <div style={{ fontWeight: 600, fontSize: 13 }}>{m.name}</div>
+                        <div style={{ fontSize: 11, color: '#3a3734', marginTop: 1 }}>{m.email}</div>
+                      </td>
+                      <td style={{ padding: '13px 14px', fontFamily: 'Space Mono,monospace', fontSize: 13 }}>
+                        {m.current_balance !== null ? fmt(m.current_balance) : <span style={{ color: '#3a3734' }}>No account</span>}
+                      </td>
+                      <td style={{ padding: '13px 14px', fontFamily: 'Space Mono,monospace', fontSize: 13, color: parseFloat(m.total_profit || 0) >= 0 ? '#3ecf8e' : '#f87171' }}>
+                        {m.total_profit !== null ? `${parseFloat(m.total_profit) >= 0 ? '+' : ''}${fmt(m.total_profit)}` : '—'}
+                      </td>
+                      <td style={{ padding: '13px 14px' }}>
+                        {parseInt(m.active_cycles) > 0
+                          ? <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: '1px solid rgba(200,169,110,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>● Active</span>
+                          : <span style={{ color: '#3a3734', fontSize: 12 }}>None</span>}
+                      </td>
+                      <td style={{ padding: '13px 14px' }}>
+                        {parseInt(m.pending_withdrawals) > 0
+                          ? <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(248,113,113,0.08)', color: '#f87171', border: '1px solid rgba(248,113,113,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{m.pending_withdrawals} pending</span>
+                          : <span style={{ color: '#3a3734', fontSize: 12 }}>—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                  {!members.length && (
+                    <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: '#3a3734', fontSize: 13 }}>No members yet</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+
+          {/* Recent Activity */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            {/* Recent Cycles */}
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>Recent Cycles</div>
+              <div style={{ border: '1px solid #1e1e1e', borderRadius: 12, overflow: 'hidden' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: '#0a0a0a', borderBottom: '1px solid #1e1e1e' }}>
+                      {['Member', 'Amount', 'Status', 'P/L'].map(h => (
+                        <th key={h} style={{ padding: '9px 12px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cycles.slice(0, 6).map(c => (
+                      <tr key={c.id} style={{ borderBottom: '1px solid #141414' }}>
+                        <td style={{ padding: '11px 12px', fontSize: 12, fontWeight: 500 }}>{c.user_name}</td>
+                        <td style={{ padding: '11px 12px', fontFamily: 'Space Mono,monospace', fontSize: 11 }}>{fmt(c.amount)}</td>
+                        <td style={{ padding: '11px 12px' }}>
+                          <span style={{
+                            display: 'inline-flex', padding: '1px 7px', borderRadius: 20, fontSize: 8, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase',
+                            background: c.status === 'active' ? 'rgba(200,169,110,0.08)' : 'rgba(96,165,250,0.08)',
+                            color: c.status === 'active' ? '#c8a96e' : '#60a5fa',
+                            border: `1px solid ${c.status === 'active' ? 'rgba(200,169,110,0.12)' : 'rgba(96,165,250,0.12)'}`,
+                          }}>{c.status}</span>
+                        </td>
+                        <td style={{ padding: '11px 12px', fontFamily: 'Space Mono,monospace', fontSize: 11, color: c.profit_loss !== null ? (parseFloat(c.profit_loss) >= 0 ? '#3ecf8e' : '#f87171') : '#3a3734' }}>
+                          {c.profit_loss !== null ? `${parseFloat(c.profit_loss) >= 0 ? '+' : ''}${fmt(c.profit_loss)}` : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                    {!cycles.length && <tr><td colSpan={4} style={{ padding: 20, textAlign: 'center', color: '#3a3734', fontSize: 12 }}>No cycles</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Recent Withdrawals */}
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>Recent Withdrawals</div>
+              <div style={{ border: '1px solid #1e1e1e', borderRadius: 12, overflow: 'hidden' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: '#0a0a0a', borderBottom: '1px solid #1e1e1e' }}>
+                      {['Member', 'Amount', 'Status', 'Date'].map(h => (
+                        <th key={h} style={{ padding: '9px 12px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {withdrawals.slice(0, 6).map(w => {
+                      const sc = {
+                        pending: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.12)' },
+                        approved: { bg: 'rgba(62,207,142,0.08)', color: '#3ecf8e', border: 'rgba(62,207,142,0.12)' },
+                        rejected: { bg: 'rgba(248,113,113,0.08)', color: '#f87171', border: 'rgba(248,113,113,0.12)' },
+                      }[w.status] || { bg: 'rgba(82,79,75,0.1)', color: '#524f4b', border: 'rgba(82,79,75,0.1)' };
+                      return (
+                        <tr key={w.id} style={{ borderBottom: '1px solid #141414' }}>
+                          <td style={{ padding: '11px 12px', fontSize: 12, fontWeight: 500 }}>{w.user_name}</td>
+                          <td style={{ padding: '11px 12px', fontFamily: 'Space Mono,monospace', fontSize: 11 }}>{fmt(w.amount)}</td>
+                          <td style={{ padding: '11px 12px' }}>
+                            <span style={{ display: 'inline-flex', padding: '1px 7px', borderRadius: 20, fontSize: 8, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', background: sc.bg, color: sc.color, border: `1px solid ${sc.border}` }}>{w.status}</span>
+                          </td>
+                          <td style={{ padding: '11px 12px', fontSize: 11, color: '#3a3734' }}>{fmtDate(w.requested_at)}</td>
+                        </tr>
+                      );
+                    })}
+                    {!withdrawals.length && <tr><td colSpan={4} style={{ padding: 20, textAlign: 'center', color: '#3a3734', fontSize: 12 }}>No withdrawals</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </>
   );
 }
 

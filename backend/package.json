@@ -1,7 +1,7 @@
 {
-  "name": "capital-system-backend",
-  "version": "1.0.0",
-  "description": "Capital System Backend API",
+  "name": "capital-invest-backend-v2",
+  "version": "2.0.0",
+  "description": "Capital Invest V2 Backend API",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

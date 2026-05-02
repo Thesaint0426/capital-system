@@ -1,332 +1,319 @@
 import Head from 'next/head';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../lib/auth';
 
-export default function LandingPage() {
+export default function Landing() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const heroRef = useRef(null);
 
   useEffect(() => {
-    // If already logged in, redirect to dashboard
     if (!loading && user) {
-      if (user.role === 'admin') router.push('/admin');
-      else router.push('/investor/dashboard');
+      router.push(user.role === 'admin' ? '/admin' : '/investor/dashboard');
     }
-  }, [user, loading, router]);
+  }, [user, loading]);
 
   useEffect(() => {
-    // Scroll animations
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
     setTimeout(() => {
-      document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible'));
-    }, 100);
+      document.querySelectorAll('.hero-reveal').forEach(el => el.classList.add('in'));
+    }, 80);
 
     const handleScroll = () => {
-      const nav = document.querySelector('.landing-nav');
-      if (nav) nav.style.background = window.scrollY > 50 ? 'rgba(3,3,3,0.97)' : 'rgba(3,3,3,0.85)';
+      const nav = document.querySelector('.lp-nav');
+      if (nav) nav.style.borderBottomColor = window.scrollY > 60 ? '#1e1e1e' : 'transparent';
     };
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => { obs.disconnect(); window.removeEventListener('scroll', handleScroll); };
   }, []);
 
-  if (loading) return null;
-  if (user) return null;
+  if (loading || user) return null;
 
   return (
     <>
       <Head>
-        <title>Capital Invest — Private Investment Management</title>
-        <meta name="description" content="Private capital management through structured 30-day investment cycles. Transparent, professional, results-driven." />
-        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+        <title>Capital Invest — Private Capital Platform</title>
+        <meta name="description" content="A selective private capital platform designed for disciplined participation through managed performance cycles." />
       </Head>
 
-      <style global jsx>{`
-        body { background: #030303 !important; }
-        .landing-page { background:#030303; color:#f0ede8; font-family:'Outfit',sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
-        .landing-page *, .landing-page *::before, .landing-page *::after { box-sizing:border-box; }
-        .landing-page a { color:inherit; text-decoration:none; }
-        .landing-nav { position:fixed; top:0; left:0; right:0; z-index:1000; padding:0 60px; height:72px; display:flex; align-items:center; justify-content:space-between; background:rgba(3,3,3,0.85); backdrop-filter:blur(20px); border-bottom:1px solid #161616; transition:background 0.3s; }
-        .nav-logo { display:flex; align-items:center; gap:12px; cursor:pointer; }
-        .nav-logo-text { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; letter-spacing:0.05em; }
-        .nav-logo-text span { color:#00e87a; }
-        .nav-links { display:flex; align-items:center; gap:36px; list-style:none; margin:0; padding:0; }
-        .nav-links a { font-size:13px; font-weight:500; color:#8a8680; letter-spacing:0.06em; text-transform:uppercase; transition:color 0.2s; cursor:pointer; }
-        .nav-links a:hover { color:#f0ede8; }
-        .nav-actions { display:flex; align-items:center; gap:12px; }
-        .btn-nav-login { padding:8px 20px; background:transparent; border:1px solid #1f1f1f; border-radius:4px; color:#8a8680; font-family:'Outfit',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; }
-        .btn-nav-login:hover { border-color:#00e87a; color:#00e87a; }
-        .btn-nav-signup { padding:8px 24px; background:#00e87a; border:none; border-radius:4px; color:#000; font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; }
-        .btn-nav-signup:hover { background:#00c268; box-shadow:0 0 30px rgba(0,232,122,0.2); }
-        .hero { min-height:100vh; padding-top:72px; display:flex; align-items:center; position:relative; overflow:hidden; }
-        .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 70% 50%,rgba(0,232,122,0.04) 0%,transparent 60%),linear-gradient(180deg,#030303 0%,#050505 100%); }
-        .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px); background-size:80px 80px; }
-        .hero-content { position:relative; z-index:2; max-width:1200px; margin:0 auto; padding:80px 60px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; width:100%; }
-        .hero-tag { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; background:rgba(0,232,122,0.06); border:1px solid rgba(0,232,122,0.15); border-radius:40px; font-size:11px; font-weight:600; color:#00e87a; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:28px; }
-        .hero-tag::before { content:''; width:6px; height:6px; background:#00e87a; border-radius:50%; animation:pulse 2s infinite; flex-shrink:0; }
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
-        .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(42px,5vw,68px); font-weight:300; line-height:1.1; letter-spacing:-0.01em; margin-bottom:24px; }
-        .hero-title em { font-style:italic; color:#00e87a; }
-        .hero-sub { font-size:17px; font-weight:300; color:#8a8680; line-height:1.7; max-width:480px; margin-bottom:40px; }
-        .hero-actions { display:flex; align-items:center; gap:16px; margin-bottom:56px; }
-        .btn-hero-primary { padding:14px 32px; background:#00e87a; border:none; border-radius:4px; color:#000; font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:0.04em; }
-        .btn-hero-primary:hover { background:#00c268; box-shadow:0 8px 40px rgba(0,232,122,0.15); transform:translateY(-1px); }
-        .btn-hero-secondary { padding:14px 32px; background:transparent; border:1px solid #1f1f1f; border-radius:4px; color:#f0ede8; font-family:'Outfit',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.25s; }
-        .btn-hero-secondary:hover { border-color:#4a4743; background:rgba(255,255,255,0.02); }
-        .hero-trust { display:flex; align-items:center; gap:32px; }
-        .trust-item { display:flex; flex-direction:column; gap:2px; }
-        .trust-value { font-family:'Space Mono',monospace; font-size:22px; font-weight:700; color:#f0ede8; }
-        .trust-value .accent { color:#00e87a; }
-        .trust-label { font-size:11px; color:#4a4743; letter-spacing:0.08em; text-transform:uppercase; }
-        .trust-divider { width:1px; height:36px; background:#1f1f1f; flex-shrink:0; }
-        .hero-right { position:relative; }
-        .float-badge { position:absolute; top:-16px; right:-16px; background:linear-gradient(135deg,#0d0d0d,#111); border:1px solid #1f1f1f; border-radius:12px; padding:14px 18px; box-shadow:0 20px 40px rgba(0,0,0,0.5); z-index:10; }
-        .float-badge-value { font-family:'Space Mono',monospace; font-size:20px; font-weight:700; color:#00e87a; }
-        .float-badge-label { font-size:10px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; }
-        .dashboard-mockup { background:#0d0d0d; border:1px solid #1f1f1f; border-radius:16px; overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.6); transform:perspective(1000px) rotateY(-5deg) rotateX(2deg); transition:transform 0.5s ease; }
-        .dashboard-mockup:hover { transform:perspective(1000px) rotateY(-2deg) rotateX(1deg); }
-        .mockup-bar { background:#0a0a0a; border-bottom:1px solid #161616; padding:12px 16px; display:flex; align-items:center; gap:8px; }
-        .mockup-url { flex:1; background:#161616; border-radius:4px; padding:4px 12px; font-size:11px; color:#4a4743; margin:0 8px; font-family:'Space Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .mockup-body { padding:20px; display:flex; flex-direction:column; gap:14px; }
-        .mockup-section-header { font-family:'Space Mono',monospace; font-size:11px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; }
-        .mockup-stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-        .mockup-stat-card { background:#0a0a0a; border:1px solid #161616; border-radius:8px; padding:12px; }
-        .mockup-stat-lbl { font-size:9px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
-        .mockup-stat-val { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; }
-        .mockup-chart-area { background:#0a0a0a; border:1px solid #161616; border-radius:8px; padding:14px; height:100px; }
-        .mockup-active-cycle { background:#0a0a0a; border:1px solid rgba(0,232,122,0.2); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; }
-        .cycle-active-badge { font-size:9px; font-weight:700; padding:3px 8px; background:rgba(0,232,122,0.1); color:#00e87a; border-radius:20px; text-transform:uppercase; letter-spacing:0.08em; }
-        .mockup-progress-bar { height:3px; background:#1f1f1f; border-radius:2px; overflow:hidden; margin-top:8px; }
-        .mockup-progress-fill { height:100%; width:65%; background:linear-gradient(90deg,#00e87a,#00ccff); border-radius:2px; }
-        .stats-bar { border-top:1px solid #161616; border-bottom:1px solid #161616; background:#070707; padding:28px 60px; }
-        .stats-bar-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); }
-        .stats-bar-item { padding:0 40px; border-right:1px solid #161616; text-align:center; }
-        .stats-bar-item:first-child { padding-left:0; }
-        .stats-bar-item:last-child { border-right:none; padding-right:0; }
-        .stats-bar-value { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:400; letter-spacing:-0.02em; margin-bottom:4px; }
-        .stats-bar-value .accent { color:#00e87a; }
-        .stats-bar-label { font-size:12px; color:#4a4743; letter-spacing:0.1em; text-transform:uppercase; }
-        .lp-section { padding:120px 60px; max-width:1200px; margin:0 auto; }
-        .section-tag { font-size:11px; font-weight:600; color:#00e87a; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:16px; }
-        .section-title { font-family:'Cormorant Garamond',serif; font-size:clamp(36px,4vw,56px); font-weight:300; line-height:1.15; margin-bottom:16px; }
-        .section-title em { font-style:italic; color:#00e87a; }
-        .section-sub { font-size:16px; color:#8a8680; max-width:540px; line-height:1.7; font-weight:300; }
-        .why-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#161616; border:1px solid #161616; border-radius:16px; overflow:hidden; margin-top:64px; }
-        .why-card { background:#0d0d0d; padding:40px 36px; transition:background 0.2s; }
-        .why-card:hover { background:#101010; }
-        .why-icon { width:44px; height:44px; background:rgba(0,232,122,0.07); border:1px solid rgba(0,232,122,0.15); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; font-size:20px; }
-        .why-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:10px; line-height:1.3; color:#f0ede8; }
-        .why-text { font-size:14px; color:#8a8680; line-height:1.7; font-weight:300; }
-        .how-section { padding:120px 60px; background:#070707; border-top:1px solid #161616; border-bottom:1px solid #161616; }
-        .how-inner { max-width:1200px; margin:0 auto; }
-        .steps-grid { display:grid; grid-template-columns:repeat(3,1fr); margin-top:64px; position:relative; }
-        .steps-grid::before { content:''; position:absolute; top:32px; left:calc(16.666% + 16px); right:calc(16.666% + 16px); height:1px; background:linear-gradient(90deg,#00e87a,#1f1f1f,#00e87a); opacity:0.3; }
-        .step-item { padding:0 40px; text-align:center; }
-        .step-num { width:64px; height:64px; border-radius:50%; background:#0a0a0a; border:1px solid #1f1f1f; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:#00e87a; position:relative; z-index:1; }
-        .step-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:10px; color:#f0ede8; }
-        .step-text { font-size:14px; color:#8a8680; line-height:1.7; font-weight:300; }
-        .features-section { padding:120px 60px; max-width:1200px; margin:0 auto; }
-        .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-top:80px; }
-        .features-list { display:flex; flex-direction:column; gap:24px; }
-        .feature-item { display:flex; gap:20px; padding:24px; background:#0d0d0d; border:1px solid #161616; border-radius:12px; transition:border-color 0.2s; }
-        .feature-item:hover { border-color:rgba(0,232,122,0.2); }
-        .feature-icon-box { font-size:22px; flex-shrink:0; margin-top:2px; }
-        .feature-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; margin-bottom:6px; color:#f0ede8; }
-        .feature-text { font-size:13px; color:#8a8680; line-height:1.6; font-weight:300; }
-        .platform-preview { background:#0d0d0d; border:1px solid #1f1f1f; border-radius:16px; overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.5); }
-        .preview-header { background:#0a0a0a; border-bottom:1px solid #161616; padding:16px 20px; display:flex; align-items:center; gap:8px; }
-        .preview-title { font-family:'Space Mono',monospace; font-size:11px; color:#4a4743; flex:1; text-align:center; text-transform:uppercase; letter-spacing:0.1em; }
-        .preview-body { padding:24px; }
-        .mini-stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-        .mini-stat { background:#0a0a0a; border:1px solid #161616; border-radius:8px; padding:14px; }
-        .mini-stat-label { font-size:9px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
-        .mini-stat-value { font-family:'Space Mono',monospace; font-size:18px; font-weight:700; }
-        .withdraw-preview { background:#0a0a0a; border:1px solid #161616; border-radius:8px; padding:16px; margin-bottom:16px; }
-        .withdraw-preview-title { font-size:10px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:10px; }
-        .withdraw-row { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; color:#8a8680; }
-        .withdraw-row.total-row { border-top:1px solid #1f1f1f; margin-top:8px; padding-top:10px; font-weight:600; color:#00e87a; font-family:'Space Mono',monospace; font-size:14px; }
-        .cycle-preview-box { background:#0a0a0a; border:1px solid rgba(0,232,122,0.15); border-radius:8px; padding:14px; }
-        .cycle-preview-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-        .cycle-preview-lbl { font-size:9px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px; }
-        .cycle-preview-val { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; color:#00e87a; }
-        .cycle-preview-badge { font-size:9px; font-weight:700; padding:3px 8px; background:rgba(0,232,122,0.1); color:#00e87a; border-radius:20px; text-transform:uppercase; letter-spacing:0.08em; }
-        .cycle-preview-progress-info { font-size:11px; color:#4a4743; display:flex; justify-content:space-between; margin-bottom:8px; }
-        .progress-track { height:4px; background:#1f1f1f; border-radius:2px; overflow:hidden; }
-        .progress-bar-fill { height:100%; background:linear-gradient(90deg,#00e87a,#00ccff); border-radius:2px; }
-        .testimonials-section { padding:120px 60px; background:#070707; border-top:1px solid #161616; border-bottom:1px solid #161616; }
-        .testimonials-inner { max-width:1200px; margin:0 auto; }
-        .testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:64px; }
-        .testimonial { background:#0d0d0d; border:1px solid #161616; border-radius:12px; padding:32px; transition:border-color 0.2s; }
-        .testimonial:hover { border-color:#1f1f1f; }
-        .testimonial-stars { color:#e8c76a; font-size:14px; letter-spacing:2px; margin-bottom:16px; }
-        .testimonial-text { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:300; font-style:italic; color:#f0ede8; line-height:1.6; margin-bottom:20px; }
-        .testimonial-author { font-size:12px; color:#4a4743; text-transform:uppercase; letter-spacing:0.1em; }
-        .cta-section { padding:160px 60px; text-align:center; position:relative; overflow:hidden; }
-        .cta-bg { position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(0,232,122,0.04) 0%,transparent 60%); }
-        .cta-inner { position:relative; z-index:1; max-width:700px; margin:0 auto; }
-        .cta-title { font-family:'Cormorant Garamond',serif; font-size:clamp(42px,5vw,64px); font-weight:300; line-height:1.15; margin-bottom:20px; }
-        .cta-title em { font-style:italic; color:#00e87a; }
-        .cta-sub { font-size:17px; color:#8a8680; font-weight:300; line-height:1.7; margin-bottom:40px; }
-        .cta-steps { display:flex; justify-content:center; gap:48px; margin-bottom:48px; }
-        .cta-step { display:flex; flex-direction:column; align-items:center; gap:8px; }
-        .cta-step-num { width:36px; height:36px; border-radius:50%; border:1px solid rgba(0,232,122,0.3); display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:13px; color:#00e87a; }
-        .cta-step-label { font-size:12px; color:#8a8680; text-align:center; max-width:80px; line-height:1.4; }
-        .btn-cta { display:inline-block; padding:16px 48px; background:#00e87a; border:none; border-radius:4px; color:#000; font-family:'Outfit',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:0.04em; }
-        .btn-cta:hover { background:#00c268; box-shadow:0 16px 60px rgba(0,232,122,0.15); transform:translateY(-2px); }
-        .landing-footer { border-top:1px solid #161616; padding:60px; background:#030303; }
-        .footer-inner { max-width:1200px; margin:0 auto; }
-        .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:60px; padding-bottom:48px; border-bottom:1px solid #161616; margin-bottom:32px; }
-        .footer-brand-name { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:500; margin-bottom:12px; }
-        .footer-brand-name span { color:#00e87a; }
-        .footer-brand-desc { font-size:13px; color:#4a4743; line-height:1.7; max-width:260px; margin-bottom:20px; }
-        .footer-col-title { font-size:11px; font-weight:600; color:#8a8680; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:16px; }
-        .footer-links-list { list-style:none; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; }
-        .footer-links-list a { font-size:13px; color:#4a4743; transition:color 0.15s; }
-        .footer-links-list a:hover { color:#8a8680; }
-        .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#4a4743; }
-        .footer-social { display:flex; gap:20px; }
-        .footer-social a { color:#4a4743; transition:color 0.15s; font-size:12px; }
-        .footer-social a:hover { color:#8a8680; }
-        .footer-disclaimer { font-size:11px; color:#4a4743; line-height:1.6; margin-top:24px; padding-top:24px; border-top:1px solid #161616; opacity:0.7; }
-        .fade-up { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease,transform 0.7s ease; }
-        .fade-up.visible { opacity:1; transform:translateY(0); }
-        .fade-up-delay-1 { transition-delay:0.1s; }
-        .fade-up-delay-2 { transition-delay:0.2s; }
-        .fade-up-delay-3 { transition-delay:0.3s; }
-        .fade-up-delay-4 { transition-delay:0.4s; }
+      <style>{`
+        .lp { background:#080808; color:#f5f3ef; font-family:'Manrope',sans-serif; overflow-x:hidden; }
+        .lp *, .lp *::before, .lp *::after { box-sizing:border-box; margin:0; padding:0; }
+
+        /* NAV */
+        .lp-nav { position:fixed; top:0; left:0; right:0; z-index:100; height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 60px; background:rgba(8,8,8,0.9); backdrop-filter:blur(24px); border-bottom:1px solid transparent; transition:border-color 0.3s; }
+        .lp-logo { display:flex; align-items:center; gap:10px; cursor:pointer; }
+        .lp-logo svg { width:28px; height:28px; }
+        .lp-logo-text { font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+        .lp-logo-text span { color:#c8a96e; }
+        .lp-nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
+        .lp-nav-links a { font-size:12px; font-weight:500; color:#524f4b; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.2s; cursor:pointer; }
+        .lp-nav-links a:hover { color:#f5f3ef; }
+        .lp-nav-actions { display:flex; gap:10px; align-items:center; }
+        .btn-nav-login { padding:8px 18px; background:transparent; border:1px solid #252525; border-radius:6px; color:#8b8680; font-family:'Manrope',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; }
+        .btn-nav-login:hover { border-color:#c8a96e; color:#c8a96e; }
+        .btn-nav-apply { padding:8px 20px; background:#c8a96e; border:none; border-radius:6px; color:#000; font-family:'Manrope',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; }
+        .btn-nav-apply:hover { background:#e0c07a; box-shadow:0 0 24px rgba(200,169,110,0.2); }
+
+        /* HERO */
+        .lp-hero { min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden; padding-top:68px; }
+        .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 70% 60% at 65% 45%, rgba(200,169,110,0.04) 0%, transparent 55%), radial-gradient(ellipse 50% 70% at 20% 80%, rgba(62,207,142,0.02) 0%, transparent 50%); }
+        .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px); background-size:72px 72px; }
+        .hero-inner { position:relative; z-index:2; max-width:1140px; margin:0 auto; padding:80px 60px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; width:100%; }
+        .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; padding:5px 12px; background:rgba(200,169,110,0.07); border:1px solid rgba(200,169,110,0.15); border-radius:40px; font-size:10px; font-weight:700; color:#c8a96e; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:24px; }
+        .hero-eyebrow-dot { width:5px; height:5px; background:#c8a96e; border-radius:50%; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .hero-h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(40px,5vw,62px); font-weight:700; line-height:1.08; letter-spacing:-0.025em; color:#f5f3ef; margin-bottom:20px; }
+        .hero-h1 .gold { color:#c8a96e; }
+        .hero-sub { font-size:16px; font-weight:400; color:#8b8680; line-height:1.7; max-width:460px; margin-bottom:36px; }
+        .hero-actions { display:flex; gap:12px; margin-bottom:48px; flex-wrap:wrap; }
+        .btn-hero-primary { padding:13px 28px; background:#c8a96e; border:none; border-radius:7px; color:#000; font-family:'Manrope',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:0.05em; text-transform:uppercase; }
+        .btn-hero-primary:hover { background:#e0c07a; box-shadow:0 8px 32px rgba(200,169,110,0.2); transform:translateY(-1px); }
+        .btn-hero-secondary { padding:13px 28px; background:transparent; border:1px solid #252525; border-radius:7px; color:#f5f3ef; font-family:'Manrope',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.25s; letter-spacing:0.04em; }
+        .btn-hero-secondary:hover { border-color:#3a3734; background:rgba(255,255,255,0.02); }
+        .hero-metrics { display:flex; gap:32px; }
+        .hero-metric-value { font-family:'Space Mono',monospace; font-size:20px; font-weight:700; color:#f5f3ef; }
+        .hero-metric-value .g { color:#c8a96e; }
+        .hero-metric-label { font-size:10px; color:#524f4b; letter-spacing:0.1em; text-transform:uppercase; margin-top:2px; }
+        .hero-metric-divider { width:1px; height:32px; background:#1e1e1e; align-self:center; }
+
+        /* HERO VISUAL */
+        .hero-visual { position:relative; }
+        .hero-card-float { position:absolute; top:-20px; right:-20px; background:#141414; border:1px solid #252525; border-radius:12px; padding:14px 18px; z-index:10; box-shadow:0 24px 48px rgba(0,0,0,0.5); }
+        .hero-card-float-val { font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:#3ecf8e; }
+        .hero-card-float-lbl { font-size:9px; color:#524f4b; text-transform:uppercase; letter-spacing:0.1em; margin-top:1px; }
+        .hero-dashboard { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:16px; overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.6); transform:perspective(900px) rotateY(-6deg) rotateX(2deg); transition:transform 0.5s ease; }
+        .hero-dashboard:hover { transform:perspective(900px) rotateY(-2deg) rotateX(1deg); }
+        .hd-bar { background:#080808; border-bottom:1px solid #141414; padding:11px 14px; display:flex; align-items:center; gap:7px; }
+        .hd-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+        .hd-url { flex:1; background:#141414; border-radius:3px; padding:3px 10px; font-family:'Space Mono',monospace; font-size:10px; color:#3a3734; margin:0 6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .hd-body { padding:18px; display:flex; flex-direction:column; gap:12px; }
+        .hd-label { font-family:'Space Mono',monospace; font-size:9px; color:#3a3734; text-transform:uppercase; letter-spacing:0.1em; }
+        .hd-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+        .hd-stat { background:#080808; border:1px solid #141414; border-radius:7px; padding:10px; }
+        .hd-stat-lbl { font-size:8px; color:#3a3734; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:5px; }
+        .hd-stat-val { font-family:'Space Mono',monospace; font-size:14px; font-weight:700; }
+        .hd-chart { background:#080808; border:1px solid #141414; border-radius:7px; padding:12px; height:88px; }
+        .hd-cycle { background:#080808; border:1px solid rgba(200,169,110,0.15); border-radius:7px; padding:11px 13px; display:flex; justify-content:space-between; align-items:center; }
+        .hd-cycle-badge { font-size:8px; font-weight:700; padding:2px 7px; background:rgba(200,169,110,0.1); color:#c8a96e; border-radius:20px; text-transform:uppercase; letter-spacing:0.07em; }
+        .hd-progress { height:2px; background:#1e1e1e; border-radius:1px; overflow:hidden; margin-top:6px; }
+        .hd-progress-fill { height:100%; background:linear-gradient(90deg,#c8a96e,#3ecf8e); border-radius:1px; }
+
+        /* TRUST STRIP */
+        .trust-strip { border-top:1px solid #141414; border-bottom:1px solid #141414; background:#0c0c0c; padding:20px 60px; }
+        .trust-strip-inner { max-width:1140px; margin:0 auto; display:flex; align-items:center; justify-content:center; gap:48px; flex-wrap:wrap; }
+        .trust-item { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:600; color:#524f4b; letter-spacing:0.08em; text-transform:uppercase; }
+        .trust-item-dot { width:4px; height:4px; background:#c8a96e; border-radius:50%; opacity:0.6; }
+
+        /* SECTIONS */
+        .lp-section { padding:100px 60px; max-width:1140px; margin:0 auto; }
+        .lp-section-full { padding:100px 60px; background:#0c0c0c; border-top:1px solid #141414; border-bottom:1px solid #141414; }
+        .lp-section-full-inner { max-width:1140px; margin:0 auto; }
+        .eyebrow { font-size:10px; font-weight:700; color:#c8a96e; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:14px; }
+        .section-h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(30px,4vw,46px); font-weight:700; line-height:1.12; letter-spacing:-0.02em; margin-bottom:14px; }
+        .section-h2 .gold { color:#c8a96e; }
+        .section-lead { font-size:15px; color:#8b8680; line-height:1.7; max-width:520px; font-weight:400; }
+
+        /* HOW IT WORKS */
+        .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#141414; border:1px solid #141414; border-radius:16px; overflow:hidden; margin-top:56px; }
+        .step { background:#0c0c0c; padding:36px 32px; transition:background 0.2s; }
+        .step:hover { background:#101010; }
+        .step-num { font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:#c8a96e; letter-spacing:0.1em; margin-bottom:16px; opacity:0.7; }
+        .step-title { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:-0.01em; }
+        .step-text { font-size:13px; color:#8b8680; line-height:1.7; }
+
+        /* PERFORMANCE */
+        .perf-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; margin-top:56px; }
+        .perf-chart-box { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:12px; padding:24px; }
+        .perf-chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .perf-chart-title { font-size:11px; font-weight:700; color:#524f4b; letter-spacing:0.1em; text-transform:uppercase; }
+        .perf-chart-tag { font-size:9px; font-weight:700; padding:3px 8px; background:rgba(200,169,110,0.08); color:#c8a96e; border-radius:20px; border:1px solid rgba(200,169,110,0.12); text-transform:uppercase; letter-spacing:0.07em; }
+        .perf-outcomes { display:flex; flex-direction:column; gap:12px; }
+        .perf-outcome-row { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:10px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+        .perf-outcome-label { font-size:12px; color:#8b8680; }
+        .perf-outcome-value { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; color:#3ecf8e; }
+        .perf-disclaimer { font-size:11px; color:#3a3734; line-height:1.6; margin-top:16px; padding:12px 14px; background:#080808; border:1px solid #141414; border-radius:7px; }
+
+        /* EXCLUSIVITY */
+        .excl-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:56px; }
+        .excl-card { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:12px; padding:28px; transition:border-color 0.2s; }
+        .excl-card:hover { border-color:#252525; }
+        .excl-icon { font-size:20px; margin-bottom:14px; }
+        .excl-title { font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; letter-spacing:-0.01em; }
+        .excl-text { font-size:13px; color:#8b8680; line-height:1.7; }
+
+        /* FAQ */
+        .faq-list { display:flex; flex-direction:column; gap:1px; border:1px solid #141414; border-radius:12px; overflow:hidden; margin-top:56px; }
+        .faq-item { background:#0c0c0c; border-bottom:1px solid #141414; }
+        .faq-item:last-child { border-bottom:none; }
+        .faq-q { width:100%; padding:20px 24px; background:none; border:none; text-align:left; font-family:'Manrope',sans-serif; font-size:14px; font-weight:600; color:#f5f3ef; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; transition:background 0.15s; }
+        .faq-q:hover { background:#101010; }
+        .faq-q-icon { font-size:18px; color:#524f4b; flex-shrink:0; transition:transform 0.2s; }
+        .faq-q.open .faq-q-icon { transform:rotate(45deg); color:#c8a96e; }
+        .faq-a { padding:0 24px 20px; font-size:13px; color:#8b8680; line-height:1.7; max-width:640px; }
+
+        /* CTA */
+        .cta-section { padding:120px 60px; text-align:center; position:relative; overflow:hidden; }
+        .cta-glow { position:absolute; inset:0; background:radial-gradient(ellipse 50% 70% at 50% 50%, rgba(200,169,110,0.05) 0%, transparent 60%); }
+        .cta-inner { position:relative; z-index:1; max-width:600px; margin:0 auto; }
+        .cta-h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(36px,5vw,56px); font-weight:700; line-height:1.1; letter-spacing:-0.025em; margin-bottom:16px; }
+        .cta-h2 .gold { color:#c8a96e; }
+        .cta-sub { font-size:16px; color:#8b8680; line-height:1.7; margin-bottom:36px; }
+        .cta-note { font-size:11px; color:#3a3734; margin-top:16px; letter-spacing:0.04em; }
+
+        /* FOOTER */
+        .lp-footer { border-top:1px solid #141414; padding:48px 60px 36px; background:#080808; }
+        .footer-inner { max-width:1140px; margin:0 auto; }
+        .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; padding-bottom:36px; border-bottom:1px solid #141414; margin-bottom:28px; }
+        .footer-brand { font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+        .footer-brand span { color:#c8a96e; }
+        .footer-tagline { font-size:12px; color:#3a3734; line-height:1.7; max-width:220px; margin-bottom:16px; }
+        .footer-contact { font-size:11px; color:#3a3734; }
+        .footer-col-title { font-size:10px; font-weight:700; color:#524f4b; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:14px; }
+        .footer-links { list-style:none; display:flex; flex-direction:column; gap:9px; }
+        .footer-links a { font-size:12px; color:#3a3734; transition:color 0.15s; cursor:pointer; }
+        .footer-links a:hover { color:#8b8680; }
+        .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#3a3734; flex-wrap:wrap; gap:12px; }
+        .footer-legal { display:flex; gap:20px; }
+        .footer-legal a { color:#3a3734; transition:color 0.15s; font-size:11px; cursor:pointer; }
+        .footer-legal a:hover { color:#524f4b; }
+        .footer-disclaimer { font-size:10px; color:#3a3734; line-height:1.6; margin-top:20px; padding-top:20px; border-top:1px solid #141414; opacity:0.7; max-width:800px; }
+
+        /* REVEAL ANIMATIONS */
+        .reveal { opacity:0; transform:translateY(24px); transition:opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1); }
+        .reveal.in { opacity:1; transform:translateY(0); }
+        .hero-reveal { opacity:0; transform:translateY(20px); transition:opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+        .hero-reveal.in { opacity:1; transform:translateY(0); }
+        .d1 { transition-delay:0.05s; }
+        .d2 { transition-delay:0.12s; }
+        .d3 { transition-delay:0.2s; }
+        .d4 { transition-delay:0.28s; }
+        .d5 { transition-delay:0.36s; }
+
+        /* RESPONSIVE */
         @media(max-width:900px){
-          .landing-nav{padding:0 24px;}
-          .nav-links{display:none;}
-          .hero-content{grid-template-columns:1fr;padding:40px 24px 60px;gap:48px;}
-          .hero-right{display:none;}
-          .stats-bar{padding:24px;}
-          .stats-bar-inner{grid-template-columns:1fr 1fr;gap:24px;}
-          .stats-bar-item{border-right:none;padding:0;}
-          .lp-section{padding:60px 24px;}
-          .why-grid{grid-template-columns:1fr;}
-          .how-section{padding:60px 24px;}
-          .steps-grid{grid-template-columns:1fr;gap:40px;}
-          .steps-grid::before{display:none;}
-          .features-section{padding:60px 24px;}
-          .features-grid{grid-template-columns:1fr;gap:40px;}
-          .testimonials-section{padding:60px 24px;}
-          .testimonials-grid{grid-template-columns:1fr;}
+          .lp-nav{padding:0 24px;} .lp-nav-links{display:none;}
+          .hero-inner{grid-template-columns:1fr;padding:40px 24px 60px;gap:40px;}
+          .hero-visual{display:none;}
+          .trust-strip{padding:16px 24px;}
+          .trust-strip-inner{gap:24px;}
+          .lp-section,.lp-section-full{padding:60px 24px;}
+          .steps{grid-template-columns:1fr;}
+          .perf-grid{grid-template-columns:1fr;}
+          .excl-grid{grid-template-columns:1fr;}
           .cta-section{padding:80px 24px;}
-          .cta-steps{gap:24px;}
-          .landing-footer{padding:40px 24px;}
-          .footer-top{grid-template-columns:1fr 1fr;gap:32px;}
+          .lp-footer{padding:36px 24px;}
+          .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
         }
       `}</style>
 
-      <div className="landing-page">
+      <div className="lp">
 
-        {/* NAVBAR */}
-        <nav className="landing-nav">
-          <div className="nav-logo">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <polygon points="16,2 28,10 28,22 16,30 4,22 4,10" fill="none" stroke="#00e87a" strokeWidth="1.5"/>
-              <polygon points="16,2 28,10 16,16 4,10" fill="#00e87a" opacity="0.9"/>
-              <polygon points="4,10 16,16 4,22" fill="#00c268" opacity="0.7"/>
-              <polygon points="28,10 16,16 28,22" fill="#00c268" opacity="0.7"/>
-              <polygon points="16,16 4,22 16,30 28,22" fill="#00e87a" opacity="0.45"/>
+        {/* NAV */}
+        <nav className="lp-nav">
+          <div className="lp-logo">
+            <svg viewBox="0 0 28 28" fill="none">
+              <polygon points="14,2 24,8 24,20 14,26 4,20 4,8" fill="none" stroke="#c8a96e" strokeWidth="1.2"/>
+              <polygon points="14,2 24,8 14,14 4,8" fill="#c8a96e" opacity="0.85"/>
+              <polygon points="4,8 14,14 4,20" fill="#a8894e" opacity="0.6"/>
+              <polygon points="24,8 14,14 24,20" fill="#a8894e" opacity="0.6"/>
+              <polygon points="14,14 4,20 14,26 24,20" fill="#c8a96e" opacity="0.4"/>
             </svg>
-            <span className="nav-logo-text">Capital<span>Invest</span></span>
+            <span className="lp-logo-text">Capital<span>Invest</span></span>
           </div>
-          <ul className="nav-links">
-            <li><a onClick={() => document.getElementById('why').scrollIntoView({behavior:'smooth'})}>Why Us</a></li>
+          <ul className="lp-nav-links">
             <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})}>How It Works</a></li>
-            <li><a onClick={() => document.getElementById('platform').scrollIntoView({behavior:'smooth'})}>Platform</a></li>
-            <li><a onClick={() => document.getElementById('testimonials').scrollIntoView({behavior:'smooth'})}>Reviews</a></li>
+            <li><a onClick={() => document.getElementById('performance').scrollIntoView({behavior:'smooth'})}>Performance</a></li>
+            <li><a onClick={() => document.getElementById('faq').scrollIntoView({behavior:'smooth'})}>FAQ</a></li>
           </ul>
-          <div className="nav-actions">
-            <button className="btn-nav-login" onClick={() => router.push('/login')}>Log In</button>
-            <button className="btn-nav-signup" onClick={() => router.push('/register')}>Get Started</button>
+          <div className="lp-nav-actions">
+            <button className="btn-nav-login" onClick={() => window.location.href='/login'}>Member Login</button>
+            <button className="btn-nav-apply" onClick={() => window.location.href='/apply'}>Apply for Access</button>
           </div>
         </nav>
 
         {/* HERO */}
-        <section className="hero">
+        <section className="lp-hero">
           <div className="hero-bg"></div>
           <div className="hero-grid"></div>
-          <div className="hero-content">
-            <div className="hero-left">
-              <div className="hero-tag fade-up">Private Investment Management</div>
-              <h1 className="hero-title fade-up fade-up-delay-1">
-                Grow your wealth with <em>disciplined</em> 30-day cycles
-              </h1>
-              <p className="hero-sub fade-up fade-up-delay-2">
-                Capital Invest is a private capital management platform where your funds are actively managed in structured 30-day investment cycles. Full transparency, real results, no surprises.
-              </p>
-              <div className="hero-actions fade-up fade-up-delay-3">
-                <button className="btn-hero-primary" onClick={() => router.push('/register')}>Open an Account</button>
-                <button className="btn-hero-secondary" onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})}>How It Works</button>
+          <div className="hero-inner">
+            <div>
+              <div className="hero-eyebrow hero-reveal">
+                <span className="hero-eyebrow-dot"></span>
+                Private Membership — By Application Only
               </div>
-              <div className="hero-trust fade-up fade-up-delay-4">
-                <div className="trust-item">
-                  <div className="trust-value">30<span className="accent">d</span></div>
-                  <div className="trust-label">Cycle Duration</div>
+              <h1 className="hero-h1 hero-reveal d1">
+                Private Capital Growth.<br/><span className="gold">Structured Simplicity.</span>
+              </h1>
+              <p className="hero-sub hero-reveal d2">
+                Join a selective private capital platform designed for disciplined participation through managed performance cycles. Transparent. Structured. Serious.
+              </p>
+              <div className="hero-actions hero-reveal d3">
+                <button className="btn-hero-primary" onClick={() => window.location.href='/apply'}>Apply for Access</button>
+                <button className="btn-hero-secondary" onClick={() => window.location.href='/login'}>Member Login</button>
+              </div>
+              <div className="hero-metrics hero-reveal d4">
+                <div>
+                  <div className="hero-metric-value">$10<span className="g">K</span></div>
+                  <div className="hero-metric-label">Entry Allocation</div>
                 </div>
-                <div className="trust-divider"></div>
-                <div className="trust-item">
-                  <div className="trust-value">0.5<span className="accent">%</span></div>
-                  <div className="trust-label">Withdrawal Fee</div>
+                <div className="hero-metric-divider"></div>
+                <div>
+                  <div className="hero-metric-value">30<span className="g">d</span></div>
+                  <div className="hero-metric-label">Cycle Duration</div>
                 </div>
-                <div className="trust-divider"></div>
-                <div className="trust-item">
-                  <div className="trust-value">100<span className="accent">%</span></div>
-                  <div className="trust-label">Transparent</div>
+                <div className="hero-metric-divider"></div>
+                <div>
+                  <div className="hero-metric-value">0.5<span className="g">%</span></div>
+                  <div className="hero-metric-label">Withdrawal Fee</div>
                 </div>
               </div>
             </div>
 
-            <div className="hero-right fade-up fade-up-delay-2">
-              <div className="float-badge">
-                <div className="float-badge-value">+8.5%</div>
-                <div className="float-badge-label">Last Cycle</div>
+            <div className="hero-visual hero-reveal d2">
+              <div className="hero-card-float">
+                <div className="hero-card-float-val">+$2,150</div>
+                <div className="hero-card-float-lbl">Last Cycle Result</div>
               </div>
-              <div className="dashboard-mockup">
-                <div className="mockup-bar">
-                  <div style={{width:10,height:10,borderRadius:'50%',background:'#ff5f57',flexShrink:0}}></div>
-                  <div style={{width:10,height:10,borderRadius:'50%',background:'#ffbd2e',flexShrink:0}}></div>
-                  <div style={{width:10,height:10,borderRadius:'50%',background:'#28c840',flexShrink:0}}></div>
-                  <div className="mockup-url">capitalinvest.com/investor/dashboard</div>
+              <div className="hero-dashboard">
+                <div className="hd-bar">
+                  <div className="hd-dot" style={{background:'#ff5f57'}}></div>
+                  <div className="hd-dot" style={{background:'#ffbd2e'}}></div>
+                  <div className="hd-dot" style={{background:'#28c840'}}></div>
+                  <div className="hd-url">capitalinvest.live/member/dashboard</div>
                 </div>
-                <div className="mockup-body">
-                  <div className="mockup-section-header">Investor Dashboard</div>
-                  <div className="mockup-stats-grid">
-                    <div className="mockup-stat-card"><div className="mockup-stat-lbl">Balance</div><div className="mockup-stat-val" style={{color:'#00e87a'}}>$12,850</div></div>
-                    <div className="mockup-stat-card"><div className="mockup-stat-lbl">Profit</div><div className="mockup-stat-val" style={{color:'#00e87a'}}>+$2,850</div></div>
-                    <div className="mockup-stat-card"><div className="mockup-stat-lbl">Cycles</div><div className="mockup-stat-val" style={{color:'#f0ede8'}}>4</div></div>
+                <div className="hd-body">
+                  <div className="hd-label">Member Dashboard</div>
+                  <div className="hd-stats">
+                    <div className="hd-stat"><div className="hd-stat-lbl">Allocation</div><div className="hd-stat-val" style={{color:'#f5f3ef'}}>$10,000</div></div>
+                    <div className="hd-stat"><div className="hd-stat-lbl">Performance</div><div className="hd-stat-val" style={{color:'#3ecf8e'}}>+$2,150</div></div>
+                    <div className="hd-stat"><div className="hd-stat-lbl">Balance</div><div className="hd-stat-val" style={{color:'#c8a96e'}}>$12,150</div></div>
                   </div>
-                  <div className="mockup-chart-area">
-                    <svg viewBox="0 0 300 72" preserveAspectRatio="none" style={{width:'100%',height:'100%'}}>
+                  <div className="hd-chart">
+                    <svg viewBox="0 0 280 64" preserveAspectRatio="none" style={{width:'100%',height:'100%'}}>
                       <defs>
-                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#00e87a" stopOpacity="0.2"/>
-                          <stop offset="100%" stopColor="#00e87a" stopOpacity="0"/>
+                        <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#c8a96e" stopOpacity="0.15"/>
+                          <stop offset="100%" stopColor="#c8a96e" stopOpacity="0"/>
                         </linearGradient>
                       </defs>
-                      <path d="M 0,60 L 60,45 L 120,33 L 180,37 L 240,20 L 300,10 L 300,72 L 0,72 Z" fill="url(#chartGrad)"/>
-                      <path d="M 0,60 L 60,45 L 120,33 L 180,37 L 240,20 L 300,10" fill="none" stroke="#00e87a" strokeWidth="2"/>
-                      <line x1="0" y1="36" x2="300" y2="36" stroke="#1a1a1a" strokeWidth="1"/>
+                      <path d="M 0,55 L 56,44 L 112,36 L 168,40 L 224,22 L 280,12 L 280,64 L 0,64 Z" fill="url(#hg)"/>
+                      <path d="M 0,55 L 56,44 L 112,36 L 168,40 L 224,22 L 280,12" fill="none" stroke="#c8a96e" strokeWidth="1.5"/>
+                      <circle cx="280" cy="12" r="3" fill="#c8a96e"/>
                     </svg>
                   </div>
-                  <div className="mockup-active-cycle">
+                  <div className="hd-cycle">
                     <div>
-                      <div style={{fontSize:'9px',color:'#4a4743',textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:'4px'}}>Active Cycle</div>
-                      <div style={{fontFamily:'Space Mono,monospace',fontSize:'16px',fontWeight:'700',color:'#00e87a'}}>$12,850.00</div>
-                      <div className="mockup-progress-bar"><div className="mockup-progress-fill"></div></div>
+                      <div style={{fontSize:'9px',color:'#3a3734',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'3px'}}>Active Cycle</div>
+                      <div style={{fontFamily:'Space Mono,monospace',fontSize:'14px',fontWeight:'700',color:'#c8a96e'}}>$10,000.00</div>
+                      <div className="hd-progress" style={{width:'160px',marginTop:'6px'}}><div className="hd-progress-fill" style={{width:'68%'}}></div></div>
                     </div>
-                    <div className="cycle-active-badge">● Active</div>
+                    <div className="hd-cycle-badge">● Active</div>
                   </div>
                 </div>
               </div>
@@ -334,62 +321,32 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* STATS BAR */}
-        <div className="stats-bar">
-          <div className="stats-bar-inner">
-            {[
-              {val:'30', suffix:'d', label:'Per Investment Cycle'},
-              {val:'24h', suffix:'', label:'Withdrawal Processing'},
-              {val:'100', suffix:'%', label:'Result Transparency'},
-              {val:'0.5', suffix:'%', label:'Only Fee on Withdrawal'},
-            ].map((s,i) => (
-              <div key={i} className={`stats-bar-item fade-up fade-up-delay-${i}`}>
-                <div className="stats-bar-value">{s.val}<span className="accent">{s.suffix}</span></div>
-                <div className="stats-bar-label">{s.label}</div>
+        {/* TRUST STRIP */}
+        <div className="trust-strip">
+          <div className="trust-strip-inner">
+            {['Private Membership Model','Secure Wallet Transfers','Transparent Cycle Tracking','Dedicated Member Dashboard','Selective Onboarding'].map((t, i) => (
+              <div key={i} className="trust-item reveal">
+                <div className="trust-item-dot"></div>
+                {t}
               </div>
             ))}
           </div>
         </div>
 
-        {/* WHY US */}
-        <section id="why">
-          <div className="lp-section">
-            <div className="section-tag fade-up">Why Capital Invest</div>
-            <h2 className="section-title fade-up fade-up-delay-1">Built for <em>serious</em> investors</h2>
-            <p className="section-sub fade-up fade-up-delay-2">We believe private capital management should be transparent, structured, and results-driven. No hidden fees. No vague promises.</p>
-            <div className="why-grid">
-              {[
-                {icon:'◈', title:'Structured 30-Day Cycles', text:'Every investment follows a clear 30-day cycle. You know exactly when it starts, when it ends, and what the result was. No ambiguity, no delays.'},
-                {icon:'⟳', title:'Real-Time Dashboard', text:'Monitor your balance, track cycle progress, view your full history and performance chart — all in one clean, intuitive platform.'},
-                {icon:'↗', title:'Flexible Withdrawals', text:'Request a withdrawal at the end of any cycle. Transparent 0.5% fee and fast processing — your funds are always accessible when you need them.'},
-                {icon:'◉', title:'Full Transparency', text:'Every cycle result is recorded and visible. Your balance reflects real outcomes — every profit and every loss, exactly as it happened.'},
-                {icon:'⬡', title:'Secure & Private', text:'Your account is protected with JWT authentication and encrypted communications. Your investment data stays private and secure.'},
-                {icon:'✦', title:'Dedicated Management', text:'Each account is personally managed. Your capital is never pooled with others. Individual attention and precise reporting.'},
-              ].map((item, i) => (
-                <div key={i} className={`why-card fade-up ${i%3===1?'fade-up-delay-1':i%3===2?'fade-up-delay-2':''}`}>
-                  <div className="why-icon">{item.icon}</div>
-                  <div className="why-title">{item.title}</div>
-                  <div className="why-text">{item.text}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* HOW IT WORKS */}
-        <section id="how" className="how-section">
-          <div className="how-inner">
-            <div className="section-tag fade-up">The Process</div>
-            <h2 className="section-title fade-up fade-up-delay-1">How it <em>works</em></h2>
-            <p className="section-sub fade-up fade-up-delay-2">Three simple steps from registration to growing your capital.</p>
-            <div className="steps-grid">
+        <section id="how">
+          <div className="lp-section">
+            <div className="eyebrow reveal">The Process</div>
+            <h2 className="section-h2 reveal d1">Three steps to <span className="gold">private membership</span></h2>
+            <p className="section-lead reveal d2">A structured onboarding process designed to ensure quality participation and mutual alignment.</p>
+            <div className="steps">
               {[
-                {n:'01', title:'Create Your Account', text:'Register on our platform and contact us to activate your investment account. We set up your initial deposit and get you onboarded within 24 hours.'},
-                {n:'02', title:'Start Your First Cycle', text:'Our team starts a 30-day investment cycle with your capital. Track progress in real-time from your personal dashboard at any time.'},
-                {n:'03', title:'Grow & Withdraw', text:'At cycle end, results are recorded and your balance updated instantly. Reinvest for another cycle or request a withdrawal — your choice.'},
+                { n:'01', title:'Apply & Qualify', text:'Submit your application for review. Our team evaluates each applicant individually. Membership is selective and not guaranteed.' },
+                { n:'02', title:'Fund Your Allocation', text:'Upon approval, fund your fixed $10,000 allocation. This standardised entry ensures a disciplined, equal-footing participation model for all members.' },
+                { n:'03', title:'Track Your Cycle', text:'Access your private dashboard to monitor your active cycle, view performance data, request withdrawals, and track your history in real time.' },
               ].map((s, i) => (
-                <div key={i} className={`step-item fade-up ${i===1?'fade-up-delay-2':i===2?'fade-up-delay-4':''}`}>
-                  <div className="step-num">{s.n}</div>
+                <div key={i} className={`step reveal d${i+1}`}>
+                  <div className="step-num">STEP {s.n}</div>
                   <div className="step-title">{s.title}</div>
                   <div className="step-text">{s.text}</div>
                 </div>
@@ -398,161 +355,197 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* PLATFORM */}
-        <section id="platform" className="features-section">
-          <div className="section-tag fade-up">The Platform</div>
-          <h2 className="section-title fade-up fade-up-delay-1">Everything you need, <em>nothing you don&apos;t</em></h2>
-          <p className="section-sub fade-up fade-up-delay-2">A clean, powerful dashboard built specifically for private investment management.</p>
-          <div className="features-grid">
-            <div className="features-list">
-              {[
-                {icon:'📊', title:'Performance Chart', text:'Visual profit and loss chart across all completed cycles. See your growth trajectory at a glance.'},
-                {icon:'⏱', title:'Live Cycle Tracker', text:'Real-time progress bar showing exactly where you are in your 30-day cycle. Days remaining, amount invested, dates.'},
-                {icon:'💸', title:'Withdrawal Calculator', text:'See your net payout before you request — fee is calculated live so you always know exactly what you will receive.'},
-                {icon:'📋', title:'Full Cycle History', text:'Every investment cycle — amount, result, profit/loss, dates — all in one clean table. Complete audit trail.'},
-              ].map((f, i) => (
-                <div key={i} className={`feature-item fade-up fade-up-delay-${i}`}>
-                  <div className="feature-icon-box">{f.icon}</div>
-                  <div>
-                    <div className="feature-title">{f.title}</div>
-                    <div className="feature-text">{f.text}</div>
+        {/* PERFORMANCE */}
+        <section id="performance" className="lp-section-full">
+          <div className="lp-section-full-inner">
+            <div className="eyebrow reveal">Historical Performance</div>
+            <h2 className="section-h2 reveal d1">Cycle outcomes, <span className="gold">transparently presented</span></h2>
+            <p className="section-lead reveal d2">Historical cycle results are shared with full disclosure. Past performance does not guarantee future results. Capital is at risk.</p>
+            <div className="perf-grid">
+              <div>
+                <div className="perf-chart-box reveal d1">
+                  <div className="perf-chart-header">
+                    <div className="perf-chart-title">Cycle Performance Chart</div>
+                    <div className="perf-chart-tag">Historical Data</div>
                   </div>
+                  <svg viewBox="0 0 440 160" style={{width:'100%'}}>
+                    <defs>
+                      <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3ecf8e" stopOpacity="0.12"/>
+                        <stop offset="100%" stopColor="#3ecf8e" stopOpacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <line x1="0" y1="80" x2="440" y2="80" stroke="#141414" strokeWidth="1"/>
+                    <line x1="0" y1="40" x2="440" y2="40" stroke="#141414" strokeWidth="1" strokeDasharray="3,3"/>
+                    <line x1="0" y1="120" x2="440" y2="120" stroke="#141414" strokeWidth="1" strokeDasharray="3,3"/>
+                    <path d="M 40,110 L 110,88 L 180,75 L 250,82 L 320,60 L 390,45 L 390,160 L 40,160 Z" fill="url(#pg)"/>
+                    <path d="M 40,110 L 110,88 L 180,75 L 250,82 L 320,60 L 390,45" fill="none" stroke="#3ecf8e" strokeWidth="2"/>
+                    {[40,110,180,250,320,390].map((x,i) => (
+                      <circle key={i} cx={x} cy={[110,88,75,82,60,45][i]} r="4" fill="#3ecf8e"/>
+                    ))}
+                    {['C1','C2','C3','C4','C5','C6'].map((l,i) => (
+                      <text key={i} x={[40,110,180,250,320,390][i]} y="155" textAnchor="middle" fill="#3a3734" fontSize="10" fontFamily="Space Mono">{l}</text>
+                    ))}
+                    <text x="8" y="83" fill="#3a3734" fontSize="9" fontFamily="Space Mono">$0</text>
+                    <text x="8" y="43" fill="#3a3734" fontSize="9" fontFamily="Space Mono">+$2K</text>
+                  </svg>
                 </div>
-              ))}
-            </div>
-
-            <div className="platform-preview fade-up fade-up-delay-2">
-              <div className="preview-header">
-                <div style={{width:10,height:10,borderRadius:'50%',background:'#ff5f57',flexShrink:0}}></div>
-                <div style={{width:10,height:10,borderRadius:'50%',background:'#ffbd2e',flexShrink:0}}></div>
-                <div style={{width:10,height:10,borderRadius:'50%',background:'#28c840',flexShrink:0}}></div>
-                <div className="preview-title">Investor Portal</div>
               </div>
-              <div className="preview-body">
-                <div className="mini-stats-grid">
-                  <div className="mini-stat"><div className="mini-stat-label">Balance</div><div className="mini-stat-value" style={{color:'#00e87a'}}>$12,850</div></div>
-                  <div className="mini-stat"><div className="mini-stat-label">Total Profit</div><div className="mini-stat-value" style={{color:'#00e87a'}}>+$2,850</div></div>
-                  <div className="mini-stat"><div className="mini-stat-label">Initial Deposit</div><div className="mini-stat-value" style={{color:'#8a8680'}}>$10,000</div></div>
-                  <div className="mini-stat"><div className="mini-stat-label">Cycles Done</div><div className="mini-stat-value" style={{color:'#f0ede8'}}>4</div></div>
-                </div>
-                <div className="withdraw-preview">
-                  <div className="withdraw-preview-title">Withdrawal Preview</div>
-                  <div className="withdraw-row"><span>Gross Amount</span><span style={{fontFamily:'Space Mono,monospace'}}>$1,000.00</span></div>
-                  <div className="withdraw-row"><span style={{color:'#ff6b6b'}}>Fee (0.5%)</span><span style={{fontFamily:'Space Mono,monospace',color:'#ff6b6b'}}>−$5.00</span></div>
-                  <div className="withdraw-row total-row"><span>You Receive</span><span>$995.00</span></div>
-                </div>
-                <div className="cycle-preview-box">
-                  <div className="cycle-preview-top">
-                    <div>
-                      <div className="cycle-preview-lbl">Active Cycle</div>
-                      <div className="cycle-preview-val">$12,850.00</div>
+              <div>
+                <div className="perf-outcomes reveal d2">
+                  <div style={{fontSize:'10px',fontWeight:'700',color:'#524f4b',letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'12px'}}>Common Historical Outcomes</div>
+                  {[
+                    { label:'Conservative Historical Range', value:'+$2,000' },
+                    { label:'Typical Historical Range', value:'+$2,150' },
+                    { label:'Higher Historical Range', value:'+$2,300' },
+                  ].map((r, i) => (
+                    <div key={i} className="perf-outcome-row">
+                      <div className="perf-outcome-label">{r.label}</div>
+                      <div className="perf-outcome-value">{r.value}</div>
                     </div>
-                    <div className="cycle-preview-badge">● Active</div>
+                  ))}
+                  <div className="perf-disclaimer">
+                    ⚠ Historical performance figures are illustrative only. Results vary per cycle and are not guaranteed. All capital is at risk. Past outcomes do not predict future performance.
                   </div>
-                  <div className="cycle-preview-progress-info">
-                    <span>Progress</span><span>72% — 8 days left</span>
-                  </div>
-                  <div className="progress-track"><div className="progress-bar-fill" style={{width:'72%'}}></div></div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* TESTIMONIALS */}
-        <section id="testimonials" className="testimonials-section">
-          <div className="testimonials-inner">
-            <div className="section-tag fade-up">Investor Reviews</div>
-            <h2 className="section-title fade-up fade-up-delay-1">What our investors <em>say</em></h2>
-            <div className="testimonials-grid">
+        {/* EXCLUSIVITY */}
+        <section>
+          <div className="lp-section">
+            <div className="eyebrow reveal">Membership Model</div>
+            <h2 className="section-h2 reveal d1">Designed for <span className="gold">serious participants</span></h2>
+            <p className="section-lead reveal d2">Every design decision — from the fixed allocation to the manual review process — is intentional. Quality over quantity.</p>
+            <div className="excl-grid">
               {[
-                {text:'"The dashboard is incredibly clear. I can see exactly what\'s happening with my capital at any time. The 30-day cycle structure gives me peace of mind."', author:'M.D. — Private Investor'},
-                {text:'"I appreciate the full transparency. Every cycle result is recorded and visible on my account. No surprises, no hidden fees — exactly what I was looking for."', author:'J.S. — Business Owner'},
-                {text:'"The withdrawal process is seamless. I requested a withdrawal after my third cycle and it was processed within 24 hours. Very professional operation."', author:'A.K. — Entrepreneur'},
-              ].map((t, i) => (
-                <div key={i} className={`testimonial fade-up fade-up-delay-${i}`}>
-                  <div className="testimonial-stars">★★★★★</div>
-                  <div className="testimonial-text">{t.text}</div>
-                  <div className="testimonial-author">{t.author}</div>
+                { icon:'◈', title:'Fixed $10,000 Allocation', text:'One standardised entry point for all members. No tiers, no confusion. Equal footing and consistent cycle management.' },
+                { icon:'◉', title:'Application-Only Access', text:'No open registration. Every applicant is reviewed manually before access is granted. This ensures the integrity of the membership circle.' },
+                { icon:'⬡', title:'Private Dashboard', text:'Each approved member receives a secure, personal dashboard with full visibility into their allocation, cycle status, and history.' },
+                { icon:'✦', title:'Structured Cycles', text:'All capital participates in clearly defined 30-day cycles with transparent start and end dates. No ambiguity on timing or process.' },
+                { icon:'⟳', title:'Transparent Results', text:'Every cycle outcome is recorded and immediately visible in your dashboard. Real numbers, real performance — nothing hidden.' },
+                { icon:'↗', title:'Flexible Exit', text:'Submit withdrawal requests at cycle completion. A minimal 0.5% processing fee applies. Your capital remains accessible.' },
+              ].map((c, i) => (
+                <div key={i} className={`excl-card reveal d${(i%3)+1}`}>
+                  <div className="excl-icon">{c.icon}</div>
+                  <div className="excl-title">{c.title}</div>
+                  <div className="excl-text">{c.text}</div>
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="lp-section-full">
+          <div className="lp-section-full-inner">
+            <div className="eyebrow reveal">Common Questions</div>
+            <h2 className="section-h2 reveal d1">Frequently asked</h2>
+            <FaqList />
           </div>
         </section>
 
         {/* CTA */}
         <section className="cta-section">
-          <div className="cta-bg"></div>
+          <div className="cta-glow"></div>
           <div className="cta-inner">
-            <div className="section-tag fade-up" style={{textAlign:'center'}}>Start Today</div>
-            <h2 className="cta-title fade-up fade-up-delay-1">Ready to grow your <em>capital?</em></h2>
-            <p className="cta-sub fade-up fade-up-delay-2">Join Capital Invest and start your first 30-day investment cycle. Full transparency, structured returns, professional management.</p>
-            <div className="cta-steps fade-up fade-up-delay-3">
-              {['Create Account','Make Your Deposit','Start Investing'].map((label, i) => (
-                <div key={i} className="cta-step">
-                  <div className="cta-step-num">{i+1}</div>
-                  <div className="cta-step-label">{label}</div>
-                </div>
-              ))}
+            <div className="eyebrow reveal" style={{textAlign:'center'}}>Limited Membership</div>
+            <h2 className="cta-h2 reveal d1">Ready to apply for <span className="gold">private access?</span></h2>
+            <p className="cta-sub reveal d2">Applications are reviewed individually. Membership is selective. If you meet our criteria, you will be contacted within 48 hours.</p>
+            <div className="reveal d3">
+              <button className="btn-hero-primary" style={{padding:'14px 36px',fontSize:'13px'}} onClick={() => window.location.href='/apply'}>Submit Your Application</button>
+              <div className="cta-note">By applying, you confirm you have read and understood our Risk Disclosure.</div>
             </div>
-            <button className="btn-cta fade-up fade-up-delay-4" onClick={() => router.push('/register')}>
-              Open Your Account
-            </button>
           </div>
         </section>
 
         {/* FOOTER */}
-        <footer className="landing-footer">
+        <footer className="lp-footer">
           <div className="footer-inner">
             <div className="footer-top">
               <div>
-                <div className="footer-brand-name">Capital<span>Invest</span></div>
-                <div className="footer-brand-desc">Private capital management through structured 30-day investment cycles. Transparent, professional, results-driven.</div>
-                <div style={{fontSize:'12px',color:'#4a4743'}}>contact@capitalinvest.com</div>
+                <div className="footer-brand">Capital<span>Invest</span></div>
+                <div className="footer-tagline">A private capital platform for disciplined participation in managed performance cycles.</div>
+                <div className="footer-contact">contact@capitalinvest.live</div>
               </div>
               <div>
                 <div className="footer-col-title">Platform</div>
-                <ul className="footer-links-list">
-                  <li><a href="/login">Log In</a></li>
-                  <li><a href="/register">Register</a></li>
-                  <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>How It Works</a></li>
-                  <li><a onClick={() => document.getElementById('platform').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>Dashboard</a></li>
+                <ul className="footer-links">
+                  <li><a onClick={() => window.location.href='/login'}>Member Login</a></li>
+                  <li><a onClick={() => window.location.href='/apply'}>Apply for Access</a></li>
+                  <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})}>How It Works</a></li>
+                  <li><a onClick={() => document.getElementById('performance').scrollIntoView({behavior:'smooth'})}>Performance</a></li>
                 </ul>
               </div>
               <div>
-                <div className="footer-col-title">Investment</div>
-                <ul className="footer-links-list">
-                  <li><a onClick={() => document.getElementById('why').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>Why Capital Invest</a></li>
-                  <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>30-Day Cycles</a></li>
-                  <li><a onClick={() => document.getElementById('platform').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>Withdrawals</a></li>
-                  <li><a onClick={() => document.getElementById('testimonials').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>Reviews</a></li>
+                <div className="footer-col-title">Membership</div>
+                <ul className="footer-links">
+                  <li><a onClick={() => document.getElementById('faq').scrollIntoView({behavior:'smooth'})}>FAQ</a></li>
+                  <li><a href="#">Risk Disclosure</a></li>
+                  <li><a href="#">Withdrawal Policy</a></li>
+                  <li><a href="#">Contact</a></li>
                 </ul>
               </div>
               <div>
                 <div className="footer-col-title">Legal</div>
-                <ul className="footer-links-list">
+                <ul className="footer-links">
                   <li><a href="#">Terms of Service</a></li>
                   <li><a href="#">Privacy Policy</a></li>
                   <li><a href="#">Risk Disclosure</a></li>
-                  <li><a href="#">Contact Us</a></li>
+                  <li><a href="#">Compliance</a></li>
                 </ul>
               </div>
             </div>
             <div className="footer-bottom">
               <div>© 2025 Capital Invest. All rights reserved.</div>
-              <div className="footer-social">
-                <a href="#">Twitter</a>
-                <a href="#">LinkedIn</a>
-                <a href="#">Instagram</a>
+              <div className="footer-legal">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Risk</a>
               </div>
             </div>
             <div className="footer-disclaimer">
-              Capital Invest is a private investment management service. Past performance is not indicative of future results. All investments carry risk. The value of your investment may go down as well as up. Please ensure you understand the risks involved before investing.
+              Capital Invest is a private capital participation platform. Membership is by application only. Participation in capital cycles involves risk, including the potential loss of the full allocation. Historical performance figures are illustrative and do not constitute a guarantee of future results. Capital Invest does not provide financial advice. All figures shown are for informational purposes only. Results may vary. Capital at risk.
             </div>
           </div>
         </footer>
 
       </div>
     </>
+  );
+}
+
+function FaqList() {
+  const faqs = [
+    { q: 'Is performance guaranteed?', a: 'No. Performance is never guaranteed. Historical cycles have commonly produced positive outcomes, but all participation carries risk. Results vary per cycle and your capital may decrease. Please read our Risk Disclosure before applying.' },
+    { q: 'How are cycles managed?', a: 'Each 30-day cycle is managed by our private capital desk. You are notified when a cycle begins and ends. Results are recorded in your dashboard upon cycle completion. You can view full history at any time.' },
+    { q: 'How do withdrawals work?', a: 'After a cycle completes, you may submit a withdrawal request via your member dashboard. A 0.5% processing fee applies. Requests are reviewed and processed within 24–48 hours. You cannot withdraw during an active cycle.' },
+    { q: 'Why is the entry fixed at $10,000?', a: 'A fixed allocation creates consistency in cycle management and ensures all members participate on equal terms. It also establishes a level of commitment that aligns with the seriousness of the platform.' },
+    { q: 'How does onboarding work?', a: 'Submit your application via our Apply page. Applications are reviewed individually within 48 hours. If approved, you will receive onboarding instructions by email. You will then fund your $10,000 allocation and your dashboard will be activated.' },
+    { q: 'Who can apply?', a: 'Any individual who understands investment risk, can commit the required $10,000 allocation, and meets our internal eligibility criteria. Membership is selective and not guaranteed to all applicants.' },
+  ];
+
+  return (
+    <div className="faq-list reveal d2">
+      {faqs.map((f, i) => (
+        <FaqItem key={i} q={f.q} a={f.a} />
+      ))}
+    </div>
+  );
+}
+
+function FaqItem({ q, a }) {
+  const { useState } = require('react');
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="faq-item">
+      <button className={`faq-q ${open ? 'open' : ''}`} onClick={() => setOpen(!open)}>
+        {q}
+        <span className="faq-q-icon">+</span>
+      </button>
+      {open && <div className="faq-a">{a}</div>}
+    </div>
   );
 }

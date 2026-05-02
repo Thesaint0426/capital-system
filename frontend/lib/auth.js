@@ -10,10 +10,10 @@ export function AuthProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem('capital_user');
-    const token = localStorage.getItem('capital_token');
+    const stored = localStorage.getItem('ci_user');
+    const token = localStorage.getItem('ci_token');
     if (stored && token) {
-      setUser(JSON.parse(stored));
+      try { setUser(JSON.parse(stored)); } catch (e) {}
     }
     setLoading(false);
   }, []);
@@ -21,30 +21,21 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const res = await api.post('/api/auth/login', { email, password });
     const { token, user } = res.data;
-    localStorage.setItem('capital_token', token);
-    localStorage.setItem('capital_user', JSON.stringify(user));
-    setUser(user);
-    return user;
-  };
-
-  const register = async (name, email, password) => {
-    const res = await api.post('/api/auth/register', { name, email, password });
-    const { token, user } = res.data;
-    localStorage.setItem('capital_token', token);
-    localStorage.setItem('capital_user', JSON.stringify(user));
+    localStorage.setItem('ci_token', token);
+    localStorage.setItem('ci_user', JSON.stringify(user));
     setUser(user);
     return user;
   };
 
   const logout = () => {
-    localStorage.removeItem('capital_token');
-    localStorage.removeItem('capital_user');
+    localStorage.removeItem('ci_token');
+    localStorage.removeItem('ci_user');
     setUser(null);
     router.push('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -61,24 +52,20 @@ export function withAuth(Component, { adminOnly = false } = {}) {
 
     useEffect(() => {
       if (!loading) {
-        if (!user) {
-          router.push('/login');
-        } else if (adminOnly && user.role !== 'admin') {
-          router.push('/investor/dashboard');
-        } else if (!adminOnly && user.role === 'admin' && router.pathname.startsWith('/investor')) {
-          router.push('/admin');
-        }
+        if (!user) router.push('/login');
+        else if (adminOnly && user.role !== 'admin') router.push('/investor/dashboard');
+        else if (!adminOnly && user.role === 'admin') router.push('/admin');
       }
-    }, [user, loading, router]);
+    }, [user, loading]);
 
     if (loading || !user) {
       return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#050505' }}>
-          <div className="spinner" />
+        <div className="page-loader">
+          <div className="page-loader-logo">Capital<span style={{color:'#c8a96e'}}>Invest</span></div>
+          <div className="spinner spinner-lg" />
         </div>
       );
     }
-
     return <Component {...props} />;
   };
 }

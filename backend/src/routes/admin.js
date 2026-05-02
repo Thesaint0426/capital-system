@@ -3,100 +3,70 @@ const router = express.Router();
 const { body, param, validationResult } = require('express-validator');
 const pool = require('../config/database');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const bcrypt = require('bcryptjs');
 
 router.use(authenticateToken, requireAdmin);
 
-// GET /api/admin/users — List all investors
+// GET /api/admin/users
 router.get('/users', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT 
-        u.id, u.name, u.email, u.role, u.created_at,
-        a.current_balance, a.initial_deposit,
-        (a.current_balance - a.initial_deposit) AS total_profit,
-        (SELECT COUNT(*) FROM investment_cycles ic WHERE ic.user_id = u.id AND ic.status = 'active') AS active_cycles,
-        (SELECT COUNT(*) FROM withdrawals w WHERE w.user_id = u.id AND w.status = 'pending') AS pending_withdrawals
-       FROM users u
-       LEFT JOIN accounts a ON a.user_id = u.id
-       WHERE u.role = 'investor'
-       ORDER BY u.created_at DESC`
+    const result = await pool.query(`
+      SELECT u.id, u.name, u.email, u.role, u.created_at,
+             a.current_balance, a.initial_deposit,
+             (a.current_balance - a.initial_deposit) AS total_profit,
+             (SELECT COUNT(*) FROM investment_cycles ic WHERE ic.user_id = u.id AND ic.status = 'active') AS active_cycles,
+             (SELECT COUNT(*) FROM withdrawals w WHERE w.user_id = u.id AND w.status = 'pending') AS pending_withdrawals
+      FROM users u LEFT JOIN accounts a ON a.user_id = u.id
+      WHERE u.role = 'investor' ORDER BY u.created_at DESC`
     );
     res.json(result.rows);
   } catch (err) {
-    console.error('Admin users error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// POST /api/admin/account — Create account for user
+// POST /api/admin/account
 router.post('/account', [
-  body('user_id').isInt({ gt: 0 }).withMessage('Valid user_id required'),
-  body('initial_deposit').isFloat({ gt: 0 }).withMessage('Initial deposit must be greater than 0'),
+  body('user_id').isInt({ gt: 0 }),
+  body('initial_deposit').isFloat({ gt: 0 }),
 ], async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { user_id, initial_deposit } = req.body;
-
   try {
     const existing = await pool.query('SELECT id FROM accounts WHERE user_id = $1', [user_id]);
-    if (existing.rows.length > 0) {
-      return res.status(409).json({ error: 'Account already exists for this user' });
-    }
+    if (existing.rows.length) return res.status(409).json({ error: 'Account already exists' });
 
     const result = await pool.query(
-      `INSERT INTO accounts (user_id, initial_deposit, current_balance)
-       VALUES ($1, $2, $2) RETURNING *`,
+      'INSERT INTO accounts (user_id, initial_deposit, current_balance) VALUES ($1, $2, $2) RETURNING *',
       [user_id, initial_deposit]
     );
-
-    res.status(201).json({
-      message: 'Account created successfully',
-      account: result.rows[0]
-    });
+    res.status(201).json({ message: 'Account activated', account: result.rows[0] });
   } catch (err) {
-    console.error('Create account error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// POST /api/admin/cycle — Start a new investment cycle
+// POST /api/admin/cycle
 router.post('/cycle', [
-  body('user_id').isInt({ gt: 0 }).withMessage('Valid user_id required'),
-  body('amount').isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
+  body('user_id').isInt({ gt: 0 }),
+  body('amount').isFloat({ gt: 0 }),
 ], async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { user_id, amount, notes } = req.body;
-
   try {
-    // Check no active cycle for this user
     const activeCycle = await pool.query(
-      "SELECT id FROM investment_cycles WHERE user_id = $1 AND status = 'active'",
-      [user_id]
+      "SELECT id FROM investment_cycles WHERE user_id = $1 AND status = 'active'", [user_id]
     );
+    if (activeCycle.rows.length) return res.status(400).json({ error: 'Member already has an active cycle' });
 
-    if (activeCycle.rows.length > 0) {
-      return res.status(400).json({ error: 'User already has an active investment cycle' });
-    }
-
-    // Check account has enough balance
-    const account = await pool.query(
-      'SELECT current_balance FROM accounts WHERE user_id = $1',
-      [user_id]
-    );
-
-    if (account.rows.length === 0) {
-      return res.status(404).json({ error: 'User account not found' });
-    }
-
+    const account = await pool.query('SELECT current_balance FROM accounts WHERE user_id = $1', [user_id]);
+    if (!account.rows.length) return res.status(404).json({ error: 'Member account not found' });
     if (parseFloat(amount) > parseFloat(account.rows[0].current_balance)) {
-      return res.status(400).json({ error: 'Insufficient account balance for this cycle' });
+      return res.status(400).json({ error: 'Insufficient account balance' });
     }
 
     const start_date = new Date();
@@ -108,141 +78,96 @@ router.post('/cycle', [
        VALUES ($1, $2, $3, $4, 'active', $5) RETURNING *`,
       [user_id, amount, start_date, end_date, notes || null]
     );
-
-    res.status(201).json({
-      message: 'Investment cycle started successfully',
-      cycle: result.rows[0]
-    });
+    res.status(201).json({ message: 'Cycle started', cycle: result.rows[0] });
   } catch (err) {
-    console.error('Start cycle error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// POST /api/admin/close-cycle — Close a cycle and record result
+// POST /api/admin/close-cycle
 router.post('/close-cycle', [
-  body('cycle_id').isInt({ gt: 0 }).withMessage('Valid cycle_id required'),
-  body('result_amount').isFloat({ gt: 0 }).withMessage('Result amount must be greater than 0'),
+  body('cycle_id').isInt({ gt: 0 }),
+  body('result_amount').isFloat({ gt: 0 }),
 ], async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { cycle_id, result_amount, notes } = req.body;
-
   const client = await pool.connect();
-
   try {
     await client.query('BEGIN');
-
     const cycleResult = await client.query(
-      "SELECT * FROM investment_cycles WHERE id = $1 AND status = 'active'",
-      [cycle_id]
+      "SELECT * FROM investment_cycles WHERE id = $1 AND status = 'active'", [cycle_id]
     );
-
-    if (cycleResult.rows.length === 0) {
+    if (!cycleResult.rows.length) {
       await client.query('ROLLBACK');
       return res.status(404).json({ error: 'Active cycle not found' });
     }
-
     const cycle = cycleResult.rows[0];
     const profit_loss = parseFloat(result_amount) - parseFloat(cycle.amount);
 
-    // Update cycle
     await client.query(
-      `UPDATE investment_cycles 
-       SET status = 'completed', result_amount = $1, profit_loss = $2, closed_at = NOW(), notes = COALESCE($3, notes)
-       WHERE id = $4`,
+      `UPDATE investment_cycles SET status='completed', result_amount=$1, profit_loss=$2, closed_at=NOW(), notes=COALESCE($3,notes) WHERE id=$4`,
       [result_amount, profit_loss, notes || null, cycle_id]
     );
-
-    // Update account balance — replace cycle amount with result_amount
     await client.query(
-      `UPDATE accounts 
-       SET current_balance = current_balance - $1 + $2, updated_at = NOW()
-       WHERE user_id = $3`,
+      `UPDATE accounts SET current_balance=current_balance-$1+$2, updated_at=NOW() WHERE user_id=$3`,
       [cycle.amount, result_amount, cycle.user_id]
     );
-
     await client.query('COMMIT');
-
-    res.json({
-      message: 'Cycle closed successfully',
-      cycle_id,
-      profit_loss,
-      result_amount
-    });
+    res.json({ message: 'Cycle closed', cycle_id, profit_loss, result_amount });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Close cycle error:', err);
     res.status(500).json({ error: 'Server error' });
   } finally {
     client.release();
   }
 });
 
-// GET /api/admin/withdrawals — List all withdrawal requests
-router.get('/withdrawals', async (req, res) => {
+// GET /api/admin/cycles
+router.get('/cycles', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT 
-        w.*,
-        u.name AS user_name,
-        u.email AS user_email
-       FROM withdrawals w
-       JOIN users u ON u.id = w.user_id
-       ORDER BY w.requested_at DESC`
+    const result = await pool.query(`
+      SELECT ic.*, u.name AS user_name, u.email AS user_email
+      FROM investment_cycles ic JOIN users u ON u.id = ic.user_id
+      ORDER BY ic.created_at DESC`
     );
     res.json(result.rows);
   } catch (err) {
-    console.error('Admin withdrawals error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET /api/admin/withdrawals
+router.get('/withdrawals', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT w.*, u.name AS user_name, u.email AS user_email
+      FROM withdrawals w JOIN users u ON u.id = w.user_id
+      ORDER BY w.requested_at DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 });
 
 // POST /api/admin/withdrawal/:id/approve
-router.post('/withdrawal/:id/approve', [
-  param('id').isInt({ gt: 0 }),
-], async (req, res) => {
+router.post('/withdrawal/:id/approve', async (req, res) => {
   const { id } = req.params;
   const { admin_note } = req.body;
-
   const client = await pool.connect();
-
   try {
     await client.query('BEGIN');
-
-    const wResult = await client.query(
-      "SELECT * FROM withdrawals WHERE id = $1 AND status = 'pending'",
-      [id]
-    );
-
-    if (wResult.rows.length === 0) {
-      await client.query('ROLLBACK');
-      return res.status(404).json({ error: 'Pending withdrawal not found' });
-    }
-
-    const withdrawal = wResult.rows[0];
-
-    // Deduct from balance
-    await client.query(
-      'UPDATE accounts SET current_balance = current_balance - $1, updated_at = NOW() WHERE user_id = $2',
-      [withdrawal.amount, withdrawal.user_id]
-    );
-
-    // Update withdrawal status
-    await client.query(
-      "UPDATE withdrawals SET status = 'approved', processed_at = NOW(), admin_note = $1 WHERE id = $2",
-      [admin_note || null, id]
-    );
-
+    const wResult = await client.query("SELECT * FROM withdrawals WHERE id=$1 AND status='pending'", [id]);
+    if (!wResult.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Pending withdrawal not found' }); }
+    const w = wResult.rows[0];
+    await client.query('UPDATE accounts SET current_balance=current_balance-$1, updated_at=NOW() WHERE user_id=$2', [w.amount, w.user_id]);
+    await client.query("UPDATE withdrawals SET status='approved', processed_at=NOW(), admin_note=$1 WHERE id=$2", [admin_note || null, id]);
     await client.query('COMMIT');
-
-    res.json({ message: 'Withdrawal approved successfully' });
+    res.json({ message: 'Withdrawal approved' });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('Approve withdrawal error:', err);
     res.status(500).json({ error: 'Server error' });
   } finally {
     client.release();
@@ -250,44 +175,82 @@ router.post('/withdrawal/:id/approve', [
 });
 
 // POST /api/admin/withdrawal/:id/reject
-router.post('/withdrawal/:id/reject', [
-  param('id').isInt({ gt: 0 }),
-], async (req, res) => {
+router.post('/withdrawal/:id/reject', async (req, res) => {
   const { id } = req.params;
   const { admin_note } = req.body;
-
   try {
     const result = await pool.query(
-      "UPDATE withdrawals SET status = 'rejected', processed_at = NOW(), admin_note = $1 WHERE id = $2 AND status = 'pending' RETURNING *",
+      "UPDATE withdrawals SET status='rejected', processed_at=NOW(), admin_note=$1 WHERE id=$2 AND status='pending' RETURNING *",
       [admin_note || null, id]
     );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Pending withdrawal not found' });
-    }
-
-    res.json({ message: 'Withdrawal rejected', withdrawal: result.rows[0] });
+    if (!result.rows.length) return res.status(404).json({ error: 'Pending withdrawal not found' });
+    res.json({ message: 'Withdrawal rejected' });
   } catch (err) {
-    console.error('Reject withdrawal error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// GET /api/admin/cycles — All cycles
-router.get('/cycles', async (req, res) => {
+// ── APPLICATIONS ──
+
+// GET /api/admin/applications
+router.get('/applications', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT 
-        ic.*,
-        u.name AS user_name,
-        u.email AS user_email
-       FROM investment_cycles ic
-       JOIN users u ON u.id = ic.user_id
-       ORDER BY ic.created_at DESC`
-    );
+    const result = await pool.query('SELECT * FROM applications ORDER BY submitted_at DESC');
     res.json(result.rows);
   } catch (err) {
-    console.error('Admin cycles error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/admin/application/:id/approve
+// Creates a user account for the applicant
+router.post('/application/:id/approve', async (req, res) => {
+  const { id } = req.params;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const appResult = await client.query("SELECT * FROM applications WHERE id=$1 AND status='pending'", [id]);
+    if (!appResult.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Pending application not found' }); }
+
+    const app = appResult.rows[0];
+
+    // Check if user already exists
+    const existing = await client.query('SELECT id FROM users WHERE email=$1', [app.email]);
+    if (!existing.rows.length) {
+      // Create user with temporary password (they'll need to reset)
+      const tempPassword = Math.random().toString(36).slice(-10) + 'A1!';
+      const hash = await bcrypt.hash(tempPassword, 10);
+      await client.query(
+        'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4)',
+        [app.name, app.email, hash, 'investor']
+      );
+    }
+
+    await client.query(
+      "UPDATE applications SET status='approved', reviewed_at=NOW(), reviewed_by=$1 WHERE id=$2",
+      [req.user.id, id]
+    );
+    await client.query('COMMIT');
+    res.json({ message: 'Application approved — user account created' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: 'Server error' });
+  } finally {
+    client.release();
+  }
+});
+
+// POST /api/admin/application/:id/reject
+router.post('/application/:id/reject', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "UPDATE applications SET status='rejected', reviewed_at=NOW(), reviewed_by=$1 WHERE id=$2 AND status='pending' RETURNING *",
+      [req.user.id, id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Application not found' });
+    res.json({ message: 'Application rejected' });
+  } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 });

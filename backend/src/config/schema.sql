@@ -1,5 +1,4 @@
-SET client_min_messages TO WARNING;
--- Capital System Database Schema
+-- Capital Invest V2 Database Schema
 
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -40,19 +39,35 @@ CREATE TABLE IF NOT EXISTS withdrawals (
   fee NUMERIC(15,2) NOT NULL,
   net_amount NUMERIC(15,2) NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'paid')),
+  wallet_address TEXT,
+  network TEXT,
   requested_at TIMESTAMPTZ DEFAULT NOW(),
   processed_at TIMESTAMPTZ,
   admin_note TEXT
 );
 
--- Index for performance
-CREATE INDEX IF NOT EXISTS idx_investment_cycles_user_id ON investment_cycles(user_id);
-CREATE INDEX IF NOT EXISTS idx_investment_cycles_status ON investment_cycles(status);
-CREATE INDEX IF NOT EXISTS idx_withdrawals_user_id ON withdrawals(user_id);
-CREATE INDEX IF NOT EXISTS idx_withdrawals_status ON withdrawals(status);
+CREATE TABLE IF NOT EXISTS applications (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  country TEXT,
+  contact TEXT,
+  source_of_funds TEXT,
+  understands_risk BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+  submitted_at TIMESTAMPTZ DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ,
+  reviewed_by INTEGER REFERENCES users(id)
+);
 
--- Default admin user (password: Admin@12345 — CHANGE IN PRODUCTION)
--- password hash for "Admin@12345"
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_cycles_user ON investment_cycles(user_id);
+CREATE INDEX IF NOT EXISTS idx_cycles_status ON investment_cycles(status);
+CREATE INDEX IF NOT EXISTS idx_withdrawals_user ON withdrawals(user_id);
+CREATE INDEX IF NOT EXISTS idx_withdrawals_status ON withdrawals(status);
+CREATE INDEX IF NOT EXISTS idx_applications_status ON applications(status);
+
+-- Default admin (password: Admin@12345)
 INSERT INTO users (name, email, password_hash, role)
 VALUES (
   'System Admin',
