@@ -49,7 +49,7 @@ export default function Landing() {
         .lp-nav { position:fixed; top:0; left:0; right:0; z-index:100; height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 60px; background:rgba(8,8,8,0.9); backdrop-filter:blur(24px); border-bottom:1px solid transparent; transition:border-color 0.3s; }
         .lp-logo { display:flex; align-items:center; gap:10px; cursor:pointer; }
         .lp-logo svg { width:28px; height:28px; }
-        .lp-logo-text { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+        .lp-logo-text { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
         .lp-logo-text span { color:#00e87a; }
         .lp-nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
         .lp-nav-links a { font-size:12px; font-weight:500; color:#524f4b; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.2s; cursor:pointer; }
@@ -68,7 +68,7 @@ export default function Landing() {
         .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; padding:5px 12px; background:rgba(0,232,122,0.07); border:1px solid rgba(0,232,122,0.15); border-radius:40px; font-size:10px; font-weight:700; color:#00e87a; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:24px; }
         .hero-eyebrow-dot { width:5px; height:5px; background:#00e87a; border-radius:50%; animation:pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .hero-h1 { font-family:'DM Sans',sans-serif; font-size:clamp(40px,5vw,62px); font-weight:700; line-height:1.08; letter-spacing:-0.025em; color:#f5f3ef; margin-bottom:20px; }
+        .hero-h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(40px,5vw,62px); font-weight:700; line-height:1.08; letter-spacing:-0.025em; color:#f5f3ef; margin-bottom:20px; }
         .hero-h1 .gold { color:#00e87a; }
         .hero-sub { font-size:16px; font-weight:400; color:#8b8680; line-height:1.7; max-width:460px; margin-bottom:36px; }
         .hero-actions { display:flex; gap:12px; margin-bottom:48px; flex-wrap:wrap; }
@@ -115,7 +115,7 @@ export default function Landing() {
         .lp-section-full { padding:100px 60px; background:#0c0c0c; border-top:1px solid #141414; border-bottom:1px solid #141414; }
         .lp-section-full-inner { max-width:1140px; margin:0 auto; }
         .eyebrow { font-size:10px; font-weight:700; color:#00e87a; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:14px; }
-        .section-h2 { font-family:'DM Sans',sans-serif; font-size:clamp(30px,4vw,46px); font-weight:700; line-height:1.12; letter-spacing:-0.02em; margin-bottom:14px; }
+        .section-h2 { font-family:'Cormorant Garamond',serif; font-size:clamp(30px,4vw,46px); font-weight:700; line-height:1.12; letter-spacing:-0.02em; margin-bottom:14px; }
         .section-h2 .gold { color:#00e87a; }
         .section-lead { font-size:15px; color:#8b8680; line-height:1.7; max-width:520px; font-weight:400; }
 
@@ -124,7 +124,7 @@ export default function Landing() {
         .step { background:#0c0c0c; padding:36px 32px; transition:background 0.2s; }
         .step:hover { background:#101010; }
         .step-num { font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:#00e87a; letter-spacing:0.1em; margin-bottom:16px; opacity:0.7; }
-        .step-title { font-family:'DM Sans',sans-serif; font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:-0.01em; }
+        .step-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:-0.01em; }
         .step-text { font-size:13px; color:#8b8680; line-height:1.7; }
 
         /* PERFORMANCE */
@@ -144,7 +144,7 @@ export default function Landing() {
         .excl-card { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:12px; padding:28px; transition:border-color 0.2s; }
         .excl-card:hover { border-color:#252525; }
         .excl-icon { font-size:20px; margin-bottom:14px; }
-        .excl-title { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; letter-spacing:-0.01em; }
+        .excl-title { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:700; margin-bottom:8px; letter-spacing:-0.01em; }
         .excl-text { font-size:13px; color:#8b8680; line-height:1.7; }
 
         /* FAQ */
@@ -161,7 +161,7 @@ export default function Landing() {
         .cta-section { padding:120px 60px; text-align:center; position:relative; overflow:hidden; }
         .cta-glow { position:absolute; inset:0; background:radial-gradient(ellipse 50% 70% at 50% 50%, rgba(0,232,122,0.05) 0%, transparent 60%); }
         .cta-inner { position:relative; z-index:1; max-width:600px; margin:0 auto; }
-        .cta-h2 { font-family:'DM Sans',sans-serif; font-size:clamp(36px,5vw,56px); font-weight:700; line-height:1.1; letter-spacing:-0.025em; margin-bottom:16px; }
+        .cta-h2 { font-family:'Cormorant Garamond',serif; font-size:clamp(36px,5vw,56px); font-weight:700; line-height:1.1; letter-spacing:-0.025em; margin-bottom:16px; }
         .cta-h2 .gold { color:#00e87a; }
         .cta-sub { font-size:16px; color:#8b8680; line-height:1.7; margin-bottom:36px; }
         .cta-note { font-size:11px; color:#3a3734; margin-top:16px; letter-spacing:0.04em; }
@@ -170,7 +170,7 @@ export default function Landing() {
         .lp-footer { border-top:1px solid #141414; padding:48px 60px 36px; background:#080808; }
         .footer-inner { max-width:1140px; margin:0 auto; }
         .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; padding-bottom:36px; border-bottom:1px solid #141414; margin-bottom:28px; }
-        .footer-brand { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+        .footer-brand { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
         .footer-brand span { color:#00e87a; }
         .footer-tagline { font-size:12px; color:#3a3734; line-height:1.7; max-width:220px; margin-bottom:16px; }
         .footer-contact { font-size:11px; color:#3a3734; }
