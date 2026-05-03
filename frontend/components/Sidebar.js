@@ -36,8 +36,8 @@ export default function Sidebar() {
     }}>
       {/* Logo */}
       <div style={{ padding: '22px 20px 18px', borderBottom: '1px solid #1e1e1e' }}>
-        <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 14, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#f5f3ef' }}>
-          Capital<span style={{ color: '#c8a96e' }}>Invest</span>
+        <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#f5f3ef' }}>
+          Capital<span style={{ color: '#00e87a' }}>Invest</span>
         </div>
         <div style={{ fontSize: 10, color: '#3a3734', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 3 }}>
           {isAdmin ? 'Admin Console' : 'Member Portal'}
@@ -59,9 +59,9 @@ export default function Sidebar() {
               padding: '9px 20px',
               fontSize: 13,
               fontWeight: 500,
-              color: active ? '#c8a96e' : '#524f4b',
-              borderLeft: `2px solid ${active ? '#c8a96e' : 'transparent'}`,
-              background: active ? 'rgba(200,169,110,0.06)' : 'transparent',
+              color: active ? '#00e87a' : '#524f4b',
+              borderLeft: `2px solid ${active ? '#00e87a' : 'transparent'}`,
+              background: active ? 'rgba(0,232,122,0.06)' : 'transparent',
               transition: 'all 0.15s',
               textDecoration: 'none',
             }}>
@@ -83,9 +83,9 @@ export default function Sidebar() {
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
           marginBottom: 8,
-          background: isAdmin ? 'rgba(200,169,110,0.08)' : 'rgba(62,207,142,0.06)',
-          color: isAdmin ? '#c8a96e' : '#3ecf8e',
-          border: `1px solid ${isAdmin ? 'rgba(200,169,110,0.15)' : 'rgba(62,207,142,0.12)'}`,
+          background: isAdmin ? 'rgba(0,232,122,0.08)' : 'rgba(62,207,142,0.06)',
+          color: isAdmin ? '#00e87a' : '#3ecf8e',
+          border: `1px solid ${isAdmin ? 'rgba(0,232,122,0.15)' : 'rgba(62,207,142,0.12)'}`,
         }}>
           {isAdmin ? 'Admin' : 'Member'}
         </div>

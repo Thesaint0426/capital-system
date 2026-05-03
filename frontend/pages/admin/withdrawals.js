@@ -43,7 +43,7 @@ function AdminWithdrawals() {
   const filtered = withdrawals.filter(w => filter === 'all' ? true : w.status === filter);
 
   const statusStyle = (s) => ({
-    pending: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.15)' },
+    pending: { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.15)' },
     approved: { bg: 'rgba(62,207,142,0.08)', color: '#3ecf8e', border: 'rgba(62,207,142,0.15)' },
     rejected: { bg: 'rgba(248,113,113,0.08)', color: '#f87171', border: 'rgba(248,113,113,0.15)' },
     paid: { bg: 'rgba(96,165,250,0.08)', color: '#60a5fa', border: 'rgba(96,165,250,0.15)' },
@@ -51,7 +51,7 @@ function AdminWithdrawals() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -59,22 +59,22 @@ function AdminWithdrawals() {
   return (
     <>
       <Head><title>Withdrawals — Capital Invest Admin</title></Head>
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope,sans-serif', color: '#f5f3ef' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
         <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
 
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Withdrawal Requests</h1>
+              <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Withdrawal Requests</h1>
               <div style={{ fontSize: 13, color: '#524f4b' }}>{pending.length} pending · {withdrawals.length} total</div>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               {['pending', 'approved', 'rejected', 'all'].map(f => (
                 <button key={f} onClick={() => setFilter(f)} style={{
-                  padding: '7px 14px', border: '1px solid', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope,sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase', transition: 'all 0.15s',
-                  background: filter === f ? '#c8a96e' : 'transparent',
+                  padding: '7px 14px', border: '1px solid', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase', transition: 'all 0.15s',
+                  background: filter === f ? '#00e87a' : 'transparent',
                   color: filter === f ? '#000' : '#524f4b',
-                  borderColor: filter === f ? '#c8a96e' : '#1e1e1e',
+                  borderColor: filter === f ? '#00e87a' : '#1e1e1e',
                 }}>{f}</button>
               ))}
             </div>
@@ -86,11 +86,11 @@ function AdminWithdrawals() {
               <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Awaiting Approval ({pending.length})</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {pending.map(w => (
-                  <div key={w.id} style={{ background: '#0c0c0c', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 12, padding: 22 }}>
+                  <div key={w.id} style={{ background: '#0c0c0c', border: '1px solid rgba(0,232,122,0.15)', borderRadius: 12, padding: 22 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                          <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: '1px solid rgba(200,169,110,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Pending</span>
+                          <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(0,232,122,0.08)', color: '#00e87a', border: '1px solid rgba(0,232,122,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Pending</span>
                           <span style={{ fontWeight: 600, fontSize: 14 }}>{w.user_name}</span>
                           <span style={{ fontSize: 12, color: '#3a3734' }}>{w.user_email}</span>
                         </div>
@@ -119,12 +119,12 @@ function AdminWithdrawals() {
                       <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                         <button onClick={() => { setActionModal({ id: w.id, action: 'reject', name: w.user_name }); setNote(''); }}
                           disabled={processing === w.id}
-                          style={{ padding: '9px 16px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 7, color: '#f87171', fontFamily: 'Manrope,sans-serif', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          style={{ padding: '9px 16px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 7, color: '#f87171', fontFamily: 'DM Sans,sans-serif', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                           Reject
                         </button>
                         <button onClick={() => { setActionModal({ id: w.id, action: 'approve', name: w.user_name, amount: w.net_amount }); setNote(''); }}
                           disabled={processing === w.id}
-                          style={{ padding: '9px 16px', background: '#c8a96e', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'Manrope,sans-serif', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          style={{ padding: '9px 16px', background: '#00e87a', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'DM Sans,sans-serif', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                           {processing === w.id ? 'Processing...' : 'Approve'}
                         </button>
                       </div>
@@ -191,7 +191,7 @@ function AdminWithdrawals() {
       {actionModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(6px)', padding: 24 }}>
           <div style={{ background: '#0c0c0c', border: '1px solid #252525', borderRadius: 16, padding: 32, width: '100%', maxWidth: 420 }}>
-            <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6 }}>
+            <div style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6 }}>
               {actionModal.action === 'approve' ? 'Approve Withdrawal' : 'Reject Withdrawal'}
             </div>
             <div style={{ fontSize: 13, color: '#524f4b', marginBottom: 20 }}>
@@ -200,7 +200,7 @@ function AdminWithdrawals() {
                 : `Reject withdrawal request from ${actionModal.name}`}
             </div>
             {actionModal.action === 'approve' && (
-              <div style={{ padding: '11px 14px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.12)', borderRadius: 7, fontSize: 12, color: '#c8a96e', marginBottom: 16 }}>
+              <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>
                 ⚠ This will deduct the gross amount from the member's balance. Ensure you pay the net amount manually.
               </div>
             )}
@@ -209,25 +209,25 @@ function AdminWithdrawals() {
                 Admin Note (optional)
               </label>
               <input
-                style={{ background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'Manrope,sans-serif', fontSize: 13, width: '100%', outline: 'none' }}
+                style={{ background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'DM Sans,sans-serif', fontSize: 13, width: '100%', outline: 'none' }}
                 type="text"
                 placeholder={actionModal.action === 'approve' ? 'e.g. Paid via USDT TRC20' : 'e.g. Cycle still active'}
                 value={note}
                 onChange={e => setNote(e.target.value)}
                 autoFocus
-                onFocus={e => e.target.style.borderColor = '#c8a96e'}
+                onFocus={e => e.target.style.borderColor = '#00e87a'}
                 onBlur={e => e.target.style.borderColor = '#252525'}
               />
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => { setActionModal(null); setNote(''); }}
-                style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#8b8680', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#8b8680', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                 Cancel
               </button>
               <button onClick={handleAction}
                 style={{
-                  padding: '10px 20px', border: 'none', borderRadius: 7, fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                  background: actionModal.action === 'approve' ? '#c8a96e' : 'rgba(248,113,113,0.1)',
+                  padding: '10px 20px', border: 'none', borderRadius: 7, fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  background: actionModal.action === 'approve' ? '#00e87a' : 'rgba(248,113,113,0.1)',
                   color: actionModal.action === 'approve' ? '#000' : '#f87171',
                   border: actionModal.action === 'approve' ? 'none' : '1px solid rgba(248,113,113,0.2)',
                 }}>

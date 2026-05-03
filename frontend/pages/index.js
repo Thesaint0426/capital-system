@@ -42,43 +42,43 @@ export default function Landing() {
       </Head>
 
       <style>{`
-        .lp { background:#080808; color:#f5f3ef; font-family:'Manrope',sans-serif; overflow-x:hidden; }
+        .lp { background:#080808; color:#f5f3ef; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
         .lp *, .lp *::before, .lp *::after { box-sizing:border-box; margin:0; padding:0; }
 
         /* NAV */
         .lp-nav { position:fixed; top:0; left:0; right:0; z-index:100; height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 60px; background:rgba(8,8,8,0.9); backdrop-filter:blur(24px); border-bottom:1px solid transparent; transition:border-color 0.3s; }
         .lp-logo { display:flex; align-items:center; gap:10px; cursor:pointer; }
         .lp-logo svg { width:28px; height:28px; }
-        .lp-logo-text { font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
-        .lp-logo-text span { color:#c8a96e; }
+        .lp-logo-text { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+        .lp-logo-text span { color:#00e87a; }
         .lp-nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
         .lp-nav-links a { font-size:12px; font-weight:500; color:#524f4b; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.2s; cursor:pointer; }
         .lp-nav-links a:hover { color:#f5f3ef; }
         .lp-nav-actions { display:flex; gap:10px; align-items:center; }
-        .btn-nav-login { padding:8px 18px; background:transparent; border:1px solid #252525; border-radius:6px; color:#8b8680; font-family:'Manrope',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; }
-        .btn-nav-login:hover { border-color:#c8a96e; color:#c8a96e; }
-        .btn-nav-apply { padding:8px 20px; background:#c8a96e; border:none; border-radius:6px; color:#000; font-family:'Manrope',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; }
-        .btn-nav-apply:hover { background:#e0c07a; box-shadow:0 0 24px rgba(200,169,110,0.2); }
+        .btn-nav-login { padding:8px 18px; background:transparent; border:1px solid #252525; border-radius:6px; color:#8b8680; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; }
+        .btn-nav-login:hover { border-color:#00e87a; color:#00e87a; }
+        .btn-nav-apply { padding:8px 20px; background:#00e87a; border:none; border-radius:6px; color:#000; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; }
+        .btn-nav-apply:hover { background:#00cc6a; box-shadow:0 0 24px rgba(0,232,122,0.2); }
 
         /* HERO */
         .lp-hero { min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden; padding-top:68px; }
-        .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 70% 60% at 65% 45%, rgba(200,169,110,0.04) 0%, transparent 55%), radial-gradient(ellipse 50% 70% at 20% 80%, rgba(62,207,142,0.02) 0%, transparent 50%); }
+        .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 70% 60% at 65% 45%, rgba(0,232,122,0.04) 0%, transparent 55%), radial-gradient(ellipse 50% 70% at 20% 80%, rgba(62,207,142,0.02) 0%, transparent 50%); }
         .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px); background-size:72px 72px; }
         .hero-inner { position:relative; z-index:2; max-width:1140px; margin:0 auto; padding:80px 60px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; width:100%; }
-        .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; padding:5px 12px; background:rgba(200,169,110,0.07); border:1px solid rgba(200,169,110,0.15); border-radius:40px; font-size:10px; font-weight:700; color:#c8a96e; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:24px; }
-        .hero-eyebrow-dot { width:5px; height:5px; background:#c8a96e; border-radius:50%; animation:pulse 2s infinite; }
+        .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; padding:5px 12px; background:rgba(0,232,122,0.07); border:1px solid rgba(0,232,122,0.15); border-radius:40px; font-size:10px; font-weight:700; color:#00e87a; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:24px; }
+        .hero-eyebrow-dot { width:5px; height:5px; background:#00e87a; border-radius:50%; animation:pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .hero-h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(40px,5vw,62px); font-weight:700; line-height:1.08; letter-spacing:-0.025em; color:#f5f3ef; margin-bottom:20px; }
-        .hero-h1 .gold { color:#c8a96e; }
+        .hero-h1 { font-family:'DM Sans',sans-serif; font-size:clamp(40px,5vw,62px); font-weight:700; line-height:1.08; letter-spacing:-0.025em; color:#f5f3ef; margin-bottom:20px; }
+        .hero-h1 .gold { color:#00e87a; }
         .hero-sub { font-size:16px; font-weight:400; color:#8b8680; line-height:1.7; max-width:460px; margin-bottom:36px; }
         .hero-actions { display:flex; gap:12px; margin-bottom:48px; flex-wrap:wrap; }
-        .btn-hero-primary { padding:13px 28px; background:#c8a96e; border:none; border-radius:7px; color:#000; font-family:'Manrope',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:0.05em; text-transform:uppercase; }
-        .btn-hero-primary:hover { background:#e0c07a; box-shadow:0 8px 32px rgba(200,169,110,0.2); transform:translateY(-1px); }
-        .btn-hero-secondary { padding:13px 28px; background:transparent; border:1px solid #252525; border-radius:7px; color:#f5f3ef; font-family:'Manrope',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.25s; letter-spacing:0.04em; }
+        .btn-hero-primary { padding:13px 28px; background:#00e87a; border:none; border-radius:7px; color:#000; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:0.05em; text-transform:uppercase; }
+        .btn-hero-primary:hover { background:#00cc6a; box-shadow:0 8px 32px rgba(0,232,122,0.2); transform:translateY(-1px); }
+        .btn-hero-secondary { padding:13px 28px; background:transparent; border:1px solid #252525; border-radius:7px; color:#f5f3ef; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.25s; letter-spacing:0.04em; }
         .btn-hero-secondary:hover { border-color:#3a3734; background:rgba(255,255,255,0.02); }
         .hero-metrics { display:flex; gap:32px; }
         .hero-metric-value { font-family:'Space Mono',monospace; font-size:20px; font-weight:700; color:#f5f3ef; }
-        .hero-metric-value .g { color:#c8a96e; }
+        .hero-metric-value .g { color:#00e87a; }
         .hero-metric-label { font-size:10px; color:#524f4b; letter-spacing:0.1em; text-transform:uppercase; margin-top:2px; }
         .hero-metric-divider { width:1px; height:32px; background:#1e1e1e; align-self:center; }
 
@@ -99,32 +99,32 @@ export default function Landing() {
         .hd-stat-lbl { font-size:8px; color:#3a3734; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:5px; }
         .hd-stat-val { font-family:'Space Mono',monospace; font-size:14px; font-weight:700; }
         .hd-chart { background:#080808; border:1px solid #141414; border-radius:7px; padding:12px; height:88px; }
-        .hd-cycle { background:#080808; border:1px solid rgba(200,169,110,0.15); border-radius:7px; padding:11px 13px; display:flex; justify-content:space-between; align-items:center; }
-        .hd-cycle-badge { font-size:8px; font-weight:700; padding:2px 7px; background:rgba(200,169,110,0.1); color:#c8a96e; border-radius:20px; text-transform:uppercase; letter-spacing:0.07em; }
+        .hd-cycle { background:#080808; border:1px solid rgba(0,232,122,0.15); border-radius:7px; padding:11px 13px; display:flex; justify-content:space-between; align-items:center; }
+        .hd-cycle-badge { font-size:8px; font-weight:700; padding:2px 7px; background:rgba(0,232,122,0.1); color:#00e87a; border-radius:20px; text-transform:uppercase; letter-spacing:0.07em; }
         .hd-progress { height:2px; background:#1e1e1e; border-radius:1px; overflow:hidden; margin-top:6px; }
-        .hd-progress-fill { height:100%; background:linear-gradient(90deg,#c8a96e,#3ecf8e); border-radius:1px; }
+        .hd-progress-fill { height:100%; background:linear-gradient(90deg,#00e87a,#3ecf8e); border-radius:1px; }
 
         /* TRUST STRIP */
         .trust-strip { border-top:1px solid #141414; border-bottom:1px solid #141414; background:#0c0c0c; padding:20px 60px; }
         .trust-strip-inner { max-width:1140px; margin:0 auto; display:flex; align-items:center; justify-content:center; gap:48px; flex-wrap:wrap; }
         .trust-item { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:600; color:#524f4b; letter-spacing:0.08em; text-transform:uppercase; }
-        .trust-item-dot { width:4px; height:4px; background:#c8a96e; border-radius:50%; opacity:0.6; }
+        .trust-item-dot { width:4px; height:4px; background:#00e87a; border-radius:50%; opacity:0.6; }
 
         /* SECTIONS */
         .lp-section { padding:100px 60px; max-width:1140px; margin:0 auto; }
         .lp-section-full { padding:100px 60px; background:#0c0c0c; border-top:1px solid #141414; border-bottom:1px solid #141414; }
         .lp-section-full-inner { max-width:1140px; margin:0 auto; }
-        .eyebrow { font-size:10px; font-weight:700; color:#c8a96e; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:14px; }
-        .section-h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(30px,4vw,46px); font-weight:700; line-height:1.12; letter-spacing:-0.02em; margin-bottom:14px; }
-        .section-h2 .gold { color:#c8a96e; }
+        .eyebrow { font-size:10px; font-weight:700; color:#00e87a; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:14px; }
+        .section-h2 { font-family:'DM Sans',sans-serif; font-size:clamp(30px,4vw,46px); font-weight:700; line-height:1.12; letter-spacing:-0.02em; margin-bottom:14px; }
+        .section-h2 .gold { color:#00e87a; }
         .section-lead { font-size:15px; color:#8b8680; line-height:1.7; max-width:520px; font-weight:400; }
 
         /* HOW IT WORKS */
         .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#141414; border:1px solid #141414; border-radius:16px; overflow:hidden; margin-top:56px; }
         .step { background:#0c0c0c; padding:36px 32px; transition:background 0.2s; }
         .step:hover { background:#101010; }
-        .step-num { font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:#c8a96e; letter-spacing:0.1em; margin-bottom:16px; opacity:0.7; }
-        .step-title { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:-0.01em; }
+        .step-num { font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:#00e87a; letter-spacing:0.1em; margin-bottom:16px; opacity:0.7; }
+        .step-title { font-family:'DM Sans',sans-serif; font-size:18px; font-weight:700; margin-bottom:10px; letter-spacing:-0.01em; }
         .step-text { font-size:13px; color:#8b8680; line-height:1.7; }
 
         /* PERFORMANCE */
@@ -132,7 +132,7 @@ export default function Landing() {
         .perf-chart-box { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:12px; padding:24px; }
         .perf-chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
         .perf-chart-title { font-size:11px; font-weight:700; color:#524f4b; letter-spacing:0.1em; text-transform:uppercase; }
-        .perf-chart-tag { font-size:9px; font-weight:700; padding:3px 8px; background:rgba(200,169,110,0.08); color:#c8a96e; border-radius:20px; border:1px solid rgba(200,169,110,0.12); text-transform:uppercase; letter-spacing:0.07em; }
+        .perf-chart-tag { font-size:9px; font-weight:700; padding:3px 8px; background:rgba(0,232,122,0.08); color:#00e87a; border-radius:20px; border:1px solid rgba(0,232,122,0.12); text-transform:uppercase; letter-spacing:0.07em; }
         .perf-outcomes { display:flex; flex-direction:column; gap:12px; }
         .perf-outcome-row { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:10px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
         .perf-outcome-label { font-size:12px; color:#8b8680; }
@@ -144,25 +144,25 @@ export default function Landing() {
         .excl-card { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:12px; padding:28px; transition:border-color 0.2s; }
         .excl-card:hover { border-color:#252525; }
         .excl-icon { font-size:20px; margin-bottom:14px; }
-        .excl-title { font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; letter-spacing:-0.01em; }
+        .excl-title { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; letter-spacing:-0.01em; }
         .excl-text { font-size:13px; color:#8b8680; line-height:1.7; }
 
         /* FAQ */
         .faq-list { display:flex; flex-direction:column; gap:1px; border:1px solid #141414; border-radius:12px; overflow:hidden; margin-top:56px; }
         .faq-item { background:#0c0c0c; border-bottom:1px solid #141414; }
         .faq-item:last-child { border-bottom:none; }
-        .faq-q { width:100%; padding:20px 24px; background:none; border:none; text-align:left; font-family:'Manrope',sans-serif; font-size:14px; font-weight:600; color:#f5f3ef; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; transition:background 0.15s; }
+        .faq-q { width:100%; padding:20px 24px; background:none; border:none; text-align:left; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:#f5f3ef; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; transition:background 0.15s; }
         .faq-q:hover { background:#101010; }
         .faq-q-icon { font-size:18px; color:#524f4b; flex-shrink:0; transition:transform 0.2s; }
-        .faq-q.open .faq-q-icon { transform:rotate(45deg); color:#c8a96e; }
+        .faq-q.open .faq-q-icon { transform:rotate(45deg); color:#00e87a; }
         .faq-a { padding:0 24px 20px; font-size:13px; color:#8b8680; line-height:1.7; max-width:640px; }
 
         /* CTA */
         .cta-section { padding:120px 60px; text-align:center; position:relative; overflow:hidden; }
-        .cta-glow { position:absolute; inset:0; background:radial-gradient(ellipse 50% 70% at 50% 50%, rgba(200,169,110,0.05) 0%, transparent 60%); }
+        .cta-glow { position:absolute; inset:0; background:radial-gradient(ellipse 50% 70% at 50% 50%, rgba(0,232,122,0.05) 0%, transparent 60%); }
         .cta-inner { position:relative; z-index:1; max-width:600px; margin:0 auto; }
-        .cta-h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(36px,5vw,56px); font-weight:700; line-height:1.1; letter-spacing:-0.025em; margin-bottom:16px; }
-        .cta-h2 .gold { color:#c8a96e; }
+        .cta-h2 { font-family:'DM Sans',sans-serif; font-size:clamp(36px,5vw,56px); font-weight:700; line-height:1.1; letter-spacing:-0.025em; margin-bottom:16px; }
+        .cta-h2 .gold { color:#00e87a; }
         .cta-sub { font-size:16px; color:#8b8680; line-height:1.7; margin-bottom:36px; }
         .cta-note { font-size:11px; color:#3a3734; margin-top:16px; letter-spacing:0.04em; }
 
@@ -170,8 +170,8 @@ export default function Landing() {
         .lp-footer { border-top:1px solid #141414; padding:48px 60px 36px; background:#080808; }
         .footer-inner { max-width:1140px; margin:0 auto; }
         .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; padding-bottom:36px; border-bottom:1px solid #141414; margin-bottom:28px; }
-        .footer-brand { font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
-        .footer-brand span { color:#c8a96e; }
+        .footer-brand { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+        .footer-brand span { color:#00e87a; }
         .footer-tagline { font-size:12px; color:#3a3734; line-height:1.7; max-width:220px; margin-bottom:16px; }
         .footer-contact { font-size:11px; color:#3a3734; }
         .footer-col-title { font-size:10px; font-weight:700; color:#524f4b; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:14px; }
@@ -218,11 +218,11 @@ export default function Landing() {
         <nav className="lp-nav">
           <div className="lp-logo">
             <svg viewBox="0 0 28 28" fill="none">
-              <polygon points="14,2 24,8 24,20 14,26 4,20 4,8" fill="none" stroke="#c8a96e" strokeWidth="1.2"/>
-              <polygon points="14,2 24,8 14,14 4,8" fill="#c8a96e" opacity="0.85"/>
-              <polygon points="4,8 14,14 4,20" fill="#a8894e" opacity="0.6"/>
-              <polygon points="24,8 14,14 24,20" fill="#a8894e" opacity="0.6"/>
-              <polygon points="14,14 4,20 14,26 24,20" fill="#c8a96e" opacity="0.4"/>
+              <polygon points="14,2 24,8 24,20 14,26 4,20 4,8" fill="none" stroke="#00e87a" strokeWidth="1.2"/>
+              <polygon points="14,2 24,8 14,14 4,8" fill="#00e87a" opacity="0.85"/>
+              <polygon points="4,8 14,14 4,20" fill="#00b860" opacity="0.6"/>
+              <polygon points="24,8 14,14 24,20" fill="#00b860" opacity="0.6"/>
+              <polygon points="14,14 4,20 14,26 24,20" fill="#00e87a" opacity="0.4"/>
             </svg>
             <span className="lp-logo-text">Capital<span>Invest</span></span>
           </div>
@@ -251,7 +251,7 @@ export default function Landing() {
                 Private Capital Growth.<br/><span className="gold">Structured Simplicity.</span>
               </h1>
               <p className="hero-sub hero-reveal d2">
-                Join a selective private capital platform designed for disciplined participation through managed performance cycles. Transparent. Structured. Serious.
+                Capital Invest is a private capital management platform where your funds are actively managed in structured 30-day investment cycles. Full transparency, real results, no surprises.
               </p>
               <div className="hero-actions hero-reveal d3">
                 <button className="btn-hero-primary" onClick={() => window.location.href='/apply'}>Apply for Access</button>
@@ -292,25 +292,25 @@ export default function Landing() {
                   <div className="hd-stats">
                     <div className="hd-stat"><div className="hd-stat-lbl">Allocation</div><div className="hd-stat-val" style={{color:'#f5f3ef'}}>$10,000</div></div>
                     <div className="hd-stat"><div className="hd-stat-lbl">Performance</div><div className="hd-stat-val" style={{color:'#3ecf8e'}}>+$2,150</div></div>
-                    <div className="hd-stat"><div className="hd-stat-lbl">Balance</div><div className="hd-stat-val" style={{color:'#c8a96e'}}>$12,150</div></div>
+                    <div className="hd-stat"><div className="hd-stat-lbl">Balance</div><div className="hd-stat-val" style={{color:'#00e87a'}}>$12,150</div></div>
                   </div>
                   <div className="hd-chart">
                     <svg viewBox="0 0 280 64" preserveAspectRatio="none" style={{width:'100%',height:'100%'}}>
                       <defs>
                         <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#c8a96e" stopOpacity="0.15"/>
-                          <stop offset="100%" stopColor="#c8a96e" stopOpacity="0"/>
+                          <stop offset="0%" stopColor="#00e87a" stopOpacity="0.15"/>
+                          <stop offset="100%" stopColor="#00e87a" stopOpacity="0"/>
                         </linearGradient>
                       </defs>
                       <path d="M 0,55 L 56,44 L 112,36 L 168,40 L 224,22 L 280,12 L 280,64 L 0,64 Z" fill="url(#hg)"/>
-                      <path d="M 0,55 L 56,44 L 112,36 L 168,40 L 224,22 L 280,12" fill="none" stroke="#c8a96e" strokeWidth="1.5"/>
-                      <circle cx="280" cy="12" r="3" fill="#c8a96e"/>
+                      <path d="M 0,55 L 56,44 L 112,36 L 168,40 L 224,22 L 280,12" fill="none" stroke="#00e87a" strokeWidth="1.5"/>
+                      <circle cx="280" cy="12" r="3" fill="#00e87a"/>
                     </svg>
                   </div>
                   <div className="hd-cycle">
                     <div>
                       <div style={{fontSize:'9px',color:'#3a3734',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:'3px'}}>Active Cycle</div>
-                      <div style={{fontFamily:'Space Mono,monospace',fontSize:'14px',fontWeight:'700',color:'#c8a96e'}}>$10,000.00</div>
+                      <div style={{fontFamily:'Space Mono,monospace',fontSize:'14px',fontWeight:'700',color:'#00e87a'}}>$10,000.00</div>
                       <div className="hd-progress" style={{width:'160px',marginTop:'6px'}}><div className="hd-progress-fill" style={{width:'68%'}}></div></div>
                     </div>
                     <div className="hd-cycle-badge">● Active</div>

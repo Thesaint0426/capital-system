@@ -39,14 +39,14 @@ function AdminApplications() {
   const filtered = apps.filter(a => filter === 'all' ? true : a.status === filter);
 
   const statusStyle = (s) => ({
-    pending: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.15)' },
+    pending: { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.15)' },
     approved: { bg: 'rgba(62,207,142,0.08)', color: '#3ecf8e', border: 'rgba(62,207,142,0.15)' },
     rejected: { bg: 'rgba(248,113,113,0.08)', color: '#f87171', border: 'rgba(248,113,113,0.15)' },
   })[s] || { bg: 'rgba(82,79,75,0.1)', color: '#524f4b', border: 'rgba(82,79,75,0.1)' };
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -54,22 +54,22 @@ function AdminApplications() {
   return (
     <>
       <Head><title>Applications — Capital Invest Admin</title></Head>
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope,sans-serif', color: '#f5f3ef' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
         <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Membership Applications</h1>
+              <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Membership Applications</h1>
               <div style={{ fontSize: 13, color: '#524f4b' }}>{apps.filter(a => a.status === 'pending').length} pending review</div>
             </div>
             {/* Filter Tabs */}
             <div style={{ display: 'flex', gap: 6 }}>
               {['pending', 'approved', 'rejected', 'all'].map(f => (
                 <button key={f} onClick={() => setFilter(f)} style={{
-                  padding: '7px 14px', border: '1px solid', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope,sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase', transition: 'all 0.15s',
-                  background: filter === f ? '#c8a96e' : 'transparent',
+                  padding: '7px 14px', border: '1px solid', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase', transition: 'all 0.15s',
+                  background: filter === f ? '#00e87a' : 'transparent',
                   color: filter === f ? '#000' : '#524f4b',
-                  borderColor: filter === f ? '#c8a96e' : '#1e1e1e',
+                  borderColor: filter === f ? '#00e87a' : '#1e1e1e',
                 }}>{f}</button>
               ))}
             </div>
@@ -108,10 +108,10 @@ function AdminApplications() {
                         <td style={{ padding: '13px 14px' }}>
                           {a.status === 'pending' && (
                             <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
-                              <button onClick={() => handleAction(a.id, 'approve')} disabled={processing === a.id} style={{ padding: '5px 12px', background: '#c8a96e', border: 'none', borderRadius: 5, color: '#000', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope,sans-serif' }}>
+                              <button onClick={() => handleAction(a.id, 'approve')} disabled={processing === a.id} style={{ padding: '5px 12px', background: '#00e87a', border: 'none', borderRadius: 5, color: '#000', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>
                                 {processing === a.id ? '...' : 'Approve'}
                               </button>
-                              <button onClick={() => handleAction(a.id, 'reject')} disabled={processing === a.id} style={{ padding: '5px 12px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 5, color: '#f87171', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope,sans-serif' }}>
+                              <button onClick={() => handleAction(a.id, 'reject')} disabled={processing === a.id} style={{ padding: '5px 12px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 5, color: '#f87171', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>
                                 Reject
                               </button>
                             </div>
@@ -153,10 +153,10 @@ function AdminApplications() {
                 </div>
                 {selected.status === 'pending' && (
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => handleAction(selected.id, 'approve')} style={{ flex: 1, padding: '10px', background: '#c8a96e', border: 'none', borderRadius: 7, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope,sans-serif' }}>
+                    <button onClick={() => handleAction(selected.id, 'approve')} style={{ flex: 1, padding: '10px', background: '#00e87a', border: 'none', borderRadius: 7, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>
                       Approve & Register
                     </button>
-                    <button onClick={() => handleAction(selected.id, 'reject')} style={{ flex: 1, padding: '10px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 7, color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope,sans-serif' }}>
+                    <button onClick={() => handleAction(selected.id, 'reject')} style={{ flex: 1, padding: '10px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 7, color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>
                       Reject
                     </button>
                   </div>

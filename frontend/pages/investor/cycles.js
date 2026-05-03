@@ -24,7 +24,7 @@ function CyclesPage() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -37,7 +37,7 @@ function CyclesPage() {
         <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
 
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Investment Cycles</h1>
+            <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Investment Cycles</h1>
             <div style={{ fontSize: 13, color: '#524f4b' }}>{data.completedCycles?.length || 0} completed cycles · {data.activeCycle ? '1 active' : 'No active cycle'}</div>
           </div>
 
@@ -45,20 +45,20 @@ function CyclesPage() {
           {data.activeCycle && (
             <div style={{ marginBottom: 28 }}>
               <div style={S.label}>Active Cycle</div>
-              <div style={{ ...S.card, border: '1px solid rgba(200,169,110,0.2)' }}>
+              <div style={{ ...S.card, border: '1px solid rgba(0,232,122,0.2)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 22 }}>
                   <div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: 'rgba(200,169,110,0.08)', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 20, fontSize: 9, fontWeight: 700, color: '#c8a96e', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: 'rgba(0,232,122,0.08)', border: '1px solid rgba(0,232,122,0.15)', borderRadius: 20, fontSize: 9, fontWeight: 700, color: '#00e87a', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
                       ● Active
                     </div>
-                    <div style={{ ...S.mono, fontSize: 32, fontWeight: 700, color: '#c8a96e' }}>{fmt(data.activeCycle.amount)}</div>
+                    <div style={{ ...S.mono, fontSize: 32, fontWeight: 700, color: '#00e87a' }}>{fmt(data.activeCycle.amount)}</div>
                     <div style={{ fontSize: 12, color: '#3a3734', marginTop: 4 }}>Current allocation — 30-day cycle</div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 28px' }}>
                     {[
                       { label: 'Start Date', value: fmtDate(data.activeCycle.start_date) },
                       { label: 'End Date', value: fmtDate(data.activeCycle.end_date) },
-                      { label: 'Days Remaining', value: `${daysLeft(data.activeCycle.end_date)} days`, color: '#c8a96e' },
+                      { label: 'Days Remaining', value: `${daysLeft(data.activeCycle.end_date)} days`, color: '#00e87a' },
                       { label: 'Progress', value: `${Math.round(cyclePct(data.activeCycle.start_date, data.activeCycle.end_date))}%`, color: '#3ecf8e' },
                     ].map((m, i) => (
                       <div key={i}>
@@ -73,7 +73,7 @@ function CyclesPage() {
                   <span>{Math.round(cyclePct(data.activeCycle.start_date, data.activeCycle.end_date))}% complete</span>
                 </div>
                 <div style={{ height: 4, background: '#1e1e1e', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${cyclePct(data.activeCycle.start_date, data.activeCycle.end_date)}%`, background: 'linear-gradient(90deg,#c8a96e,#3ecf8e)', borderRadius: 2 }}></div>
+                  <div style={{ height: '100%', width: `${cyclePct(data.activeCycle.start_date, data.activeCycle.end_date)}%`, background: 'linear-gradient(90deg,#00e87a,#3ecf8e)', borderRadius: 2 }}></div>
                 </div>
                 {data.activeCycle.notes && (
                   <div style={{ marginTop: 14, padding: '10px 12px', background: '#080808', borderRadius: 7, fontSize: 12, color: '#524f4b', fontStyle: 'italic' }}>📎 {data.activeCycle.notes}</div>
@@ -103,7 +103,7 @@ function CyclesPage() {
                     {data.allCycles.map((c, i) => {
                       const pl = parseFloat(c.profit_loss || 0);
                       const statusColors = {
-                        active: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.15)' },
+                        active: { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.15)' },
                         completed: { bg: 'rgba(96,165,250,0.08)', color: '#60a5fa', border: 'rgba(96,165,250,0.15)' },
                       };
                       const sc = statusColors[c.status] || statusColors.completed;

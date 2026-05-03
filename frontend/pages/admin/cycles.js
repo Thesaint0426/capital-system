@@ -69,26 +69,26 @@ function AdminCycles() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
-  const inputStyle = { background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'Manrope,sans-serif', fontSize: 13, width: '100%', outline: 'none', transition: 'border-color 0.15s' };
+  const inputStyle = { background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'DM Sans,sans-serif', fontSize: 13, width: '100%', outline: 'none', transition: 'border-color 0.15s' };
   const labelStyle = { display: 'block', fontSize: 10, fontWeight: 700, color: '#524f4b', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 };
 
   return (
     <>
       <Head><title>Cycles — Capital Invest Admin</title></Head>
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope,sans-serif', color: '#f5f3ef' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
         <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Investment Cycles</h1>
+              <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Investment Cycles</h1>
               <div style={{ fontSize: 13, color: '#524f4b' }}>{active.length} active · {completed.length} completed</div>
             </div>
-            <button onClick={() => setShowStart(true)} style={{ padding: '10px 20px', background: '#c8a96e', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.04em' }}>
+            <button onClick={() => setShowStart(true)} style={{ padding: '10px 20px', background: '#00e87a', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.04em' }}>
               + Start New Cycle
             </button>
           </div>
@@ -99,15 +99,15 @@ function AdminCycles() {
               <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Active Cycles ({active.length})</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {active.map(c => (
-                  <div key={c.id} style={{ background: '#0c0c0c', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 12, padding: 22 }}>
+                  <div key={c.id} style={{ background: '#0c0c0c', border: '1px solid rgba(0,232,122,0.15)', borderRadius: 12, padding: 22 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                          <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: '1px solid rgba(200,169,110,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>● Active</span>
+                          <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(0,232,122,0.08)', color: '#00e87a', border: '1px solid rgba(0,232,122,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>● Active</span>
                           <span style={{ fontSize: 13, fontWeight: 600 }}>{c.user_name}</span>
                           <span style={{ fontSize: 11, color: '#3a3734' }}>{c.user_email}</span>
                         </div>
-                        <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 24, fontWeight: 700, color: '#c8a96e' }}>{fmt(c.amount)}</div>
+                        <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 24, fontWeight: 700, color: '#00e87a' }}>{fmt(c.amount)}</div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                         <div style={{ textAlign: 'right', fontSize: 12, color: '#524f4b' }}>
@@ -116,7 +116,7 @@ function AdminCycles() {
                           <div style={{ fontSize: 11, marginTop: 4 }}>{fmtDate(c.start_date)} → {fmtDate(c.end_date)}</div>
                         </div>
                         <button onClick={() => { setSelectedCycle(c); setCloseForm({ result_amount: '', notes: '' }); setShowClose(true); }}
-                          style={{ padding: '9px 16px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#f5f3ef', fontFamily: 'Manrope,sans-serif', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          style={{ padding: '9px 16px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#f5f3ef', fontFamily: 'DM Sans,sans-serif', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                           Close Cycle
                         </button>
                       </div>
@@ -126,7 +126,7 @@ function AdminCycles() {
                       <span>{Math.round(cyclePct(c.start_date, c.end_date))}%</span>
                     </div>
                     <div style={{ height: 3, background: '#1e1e1e', borderRadius: 2, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${cyclePct(c.start_date, c.end_date)}%`, background: 'linear-gradient(90deg,#c8a96e,#3ecf8e)', borderRadius: 2 }}></div>
+                      <div style={{ height: '100%', width: `${cyclePct(c.start_date, c.end_date)}%`, background: 'linear-gradient(90deg,#00e87a,#3ecf8e)', borderRadius: 2 }}></div>
                     </div>
                   </div>
                 ))}
@@ -149,7 +149,7 @@ function AdminCycles() {
                 <tbody>
                   {cycles.map(c => {
                     const pl = parseFloat(c.profit_loss || 0);
-                    const sc = c.status === 'active' ? { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.12)' } : { bg: 'rgba(96,165,250,0.08)', color: '#60a5fa', border: 'rgba(96,165,250,0.12)' };
+                    const sc = c.status === 'active' ? { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.12)' } : { bg: 'rgba(96,165,250,0.08)', color: '#60a5fa', border: 'rgba(96,165,250,0.12)' };
                     return (
                       <tr key={c.id} style={{ borderBottom: '1px solid #141414', transition: 'background 0.12s' }}
                         onMouseOver={e => e.currentTarget.style.background = '#0a0a0a'}
@@ -171,7 +171,7 @@ function AdminCycles() {
                         <td style={{ padding: '13px 14px' }}>
                           {c.status === 'active' && (
                             <button onClick={() => { setSelectedCycle(c); setCloseForm({ result_amount: '', notes: '' }); setShowClose(true); }}
-                              style={{ padding: '5px 12px', background: 'transparent', border: '1px solid #252525', borderRadius: 5, color: '#f5f3ef', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope,sans-serif' }}>Close</button>
+                              style={{ padding: '5px 12px', background: 'transparent', border: '1px solid #252525', borderRadius: 5, color: '#f5f3ef', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif' }}>Close</button>
                           )}
                         </td>
                       </tr>
@@ -189,13 +189,13 @@ function AdminCycles() {
       {showStart && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(6px)', padding: 24 }}>
           <div style={{ background: '#0c0c0c', border: '1px solid #252525', borderRadius: 16, padding: 32, width: '100%', maxWidth: 460 }}>
-            <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6, letterSpacing: '-0.01em' }}>Start Investment Cycle</div>
+            <div style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6, letterSpacing: '-0.01em' }}>Start Investment Cycle</div>
             <div style={{ fontSize: 13, color: '#524f4b', marginBottom: 24 }}>Initiate a new 30-day cycle for a member</div>
             <form onSubmit={handleStartCycle} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
                 <label style={labelStyle}>Member *</label>
                 <select style={{ ...inputStyle, cursor: 'pointer' }} value={startForm.user_id} onChange={e => setStartForm(f => ({ ...f, user_id: e.target.value }))} required
-                  onFocus={e => e.target.style.borderColor = '#c8a96e'} onBlur={e => e.target.style.borderColor = '#252525'}>
+                  onFocus={e => e.target.style.borderColor = '#00e87a'} onBlur={e => e.target.style.borderColor = '#252525'}>
                   <option value="">Select member...</option>
                   {members.map(m => <option key={m.id} value={m.id}>{m.name} — {fmt(m.current_balance)} balance</option>)}
                 </select>
@@ -205,20 +205,20 @@ function AdminCycles() {
                 <label style={labelStyle}>Cycle Amount (USD) *</label>
                 <input style={{ ...inputStyle, fontFamily: 'Space Mono,monospace', fontSize: 15 }} type="number" step="0.01" min="1"
                   value={startForm.amount} onChange={e => setStartForm(f => ({ ...f, amount: e.target.value }))}
-                  onFocus={e => e.target.style.borderColor = '#c8a96e'} onBlur={e => e.target.style.borderColor = '#252525'} required />
+                  onFocus={e => e.target.style.borderColor = '#00e87a'} onBlur={e => e.target.style.borderColor = '#252525'} required />
               </div>
               <div>
                 <label style={labelStyle}>Notes (optional)</label>
                 <input style={inputStyle} type="text" placeholder="e.g. Q2 2025 cycle" value={startForm.notes}
                   onChange={e => setStartForm(f => ({ ...f, notes: e.target.value }))}
-                  onFocus={e => e.target.style.borderColor = '#c8a96e'} onBlur={e => e.target.style.borderColor = '#252525'} />
+                  onFocus={e => e.target.style.borderColor = '#00e87a'} onBlur={e => e.target.style.borderColor = '#252525'} />
               </div>
               <div style={{ padding: '10px 12px', background: '#080808', border: '1px solid #141414', borderRadius: 7, fontSize: 11, color: '#3a3734' }}>
                 Cycle will run for 30 days starting today
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button type="button" onClick={() => setShowStart(false)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#8b8680', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={submitting} style={{ padding: '10px 20px', background: '#c8a96e', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                <button type="button" onClick={() => setShowStart(false)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#8b8680', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" disabled={submitting} style={{ padding: '10px 20px', background: '#00e87a', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                   {submitting ? 'Starting...' : 'Start Cycle'}
                 </button>
               </div>
@@ -231,7 +231,7 @@ function AdminCycles() {
       {showClose && selectedCycle && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(6px)', padding: 24 }}>
           <div style={{ background: '#0c0c0c', border: '1px solid #252525', borderRadius: 16, padding: 32, width: '100%', maxWidth: 460 }}>
-            <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Close Cycle & Record Result</div>
+            <div style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Close Cycle & Record Result</div>
             <div style={{ fontSize: 13, color: '#524f4b', marginBottom: 20 }}>Enter the final result for this cycle</div>
             <div style={{ background: '#080808', border: '1px solid #141414', borderRadius: 8, padding: '14px 16px', marginBottom: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 13 }}>
@@ -240,7 +240,7 @@ function AdminCycles() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
                 <span style={{ color: '#524f4b' }}>Allocated</span>
-                <span style={{ fontFamily: 'Space Mono,monospace', fontWeight: 700, color: '#c8a96e' }}>{fmt(selectedCycle.amount)}</span>
+                <span style={{ fontFamily: 'Space Mono,monospace', fontWeight: 700, color: '#00e87a' }}>{fmt(selectedCycle.amount)}</span>
               </div>
             </div>
             <form onSubmit={handleCloseCycle} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -249,7 +249,7 @@ function AdminCycles() {
                 <input style={{ ...inputStyle, fontFamily: 'Space Mono,monospace', fontSize: 15 }} type="number" step="0.01" min="0.01"
                   placeholder="Final value after cycle" value={closeForm.result_amount}
                   onChange={e => setCloseForm(f => ({ ...f, result_amount: e.target.value }))}
-                  onFocus={e => e.target.style.borderColor = '#c8a96e'} onBlur={e => e.target.style.borderColor = '#252525'}
+                  onFocus={e => e.target.style.borderColor = '#00e87a'} onBlur={e => e.target.style.borderColor = '#252525'}
                   autoFocus required />
               </div>
               {plPreview !== null && (
@@ -264,11 +264,11 @@ function AdminCycles() {
                 <label style={labelStyle}>Admin Notes (optional)</label>
                 <input style={inputStyle} type="text" placeholder="Note for member dashboard..." value={closeForm.notes}
                   onChange={e => setCloseForm(f => ({ ...f, notes: e.target.value }))}
-                  onFocus={e => e.target.style.borderColor = '#c8a96e'} onBlur={e => e.target.style.borderColor = '#252525'} />
+                  onFocus={e => e.target.style.borderColor = '#00e87a'} onBlur={e => e.target.style.borderColor = '#252525'} />
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button type="button" onClick={() => { setShowClose(false); setSelectedCycle(null); }} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#8b8680', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={submitting} style={{ padding: '10px 20px', background: '#c8a96e', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                <button type="button" onClick={() => { setShowClose(false); setSelectedCycle(null); }} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #252525', borderRadius: 7, color: '#8b8680', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" disabled={submitting} style={{ padding: '10px 20px', background: '#00e87a', border: 'none', borderRadius: 7, color: '#000', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                   {submitting ? 'Closing...' : 'Close & Record Result'}
                 </button>
               </div>

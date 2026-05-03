@@ -38,8 +38,8 @@ function Dashboard() {
       labels: done.map((_, i) => `Cycle ${i + 1}`),
       datasets: [{
         data: done.map(c => parseFloat(c.profit_loss || 0)),
-        borderColor: '#c8a96e',
-        backgroundColor: 'rgba(200,169,110,0.06)',
+        borderColor: '#00e87a',
+        backgroundColor: 'rgba(0,232,122,0.06)',
         borderWidth: 1.5,
         pointBackgroundColor: done.map(c => parseFloat(c.profit_loss) >= 0 ? '#3ecf8e' : '#f87171'),
         pointRadius: 4,
@@ -76,8 +76,8 @@ function Dashboard() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808', flexDirection: 'column', gap: 16 }}>
-      <div style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 14, fontWeight: 700, letterSpacing: '0.08em', color: '#3a3734', textTransform: 'uppercase' }}>Capital<span style={{ color: '#c8a96e' }}>Invest</span></div>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 14, fontWeight: 700, letterSpacing: '0.08em', color: '#3a3734', textTransform: 'uppercase' }}>Capital<span style={{ color: '#00e87a' }}>Invest</span></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -92,7 +92,7 @@ function Dashboard() {
           {/* Header */}
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>
+              <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>
                 Member Dashboard
               </h1>
               <div style={{ fontSize: 13, color: '#524f4b' }}>Welcome back, {user?.name}</div>
@@ -108,7 +108,7 @@ function Dashboard() {
           {error && <div style={{ padding: '12px 16px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: 8, fontSize: 13, color: '#f87171', marginBottom: 24 }}>{error}</div>}
 
           {!account && !error && (
-            <div style={{ padding: '16px 20px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 8, fontSize: 13, color: '#c8a96e', marginBottom: 24 }}>
+            <div style={{ padding: '16px 20px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.15)', borderRadius: 8, fontSize: 13, color: '#00e87a', marginBottom: 24 }}>
               Your account is pending activation. Our team will notify you once your allocation has been configured.
             </div>
           )}
@@ -121,7 +121,7 @@ function Dashboard() {
                   { label: 'Current Balance', value: fmt(balance), sub: 'Available allocation', color: '#f5f3ef' },
                   { label: 'Initial Allocation', value: fmt(initial), sub: 'Fixed entry amount', color: '#8b8680' },
                   { label: 'Total Performance', value: `${sign(totalProfit)}${fmt(totalProfit)}`, sub: `${returnPct}% return`, color: totalProfit >= 0 ? '#3ecf8e' : '#f87171' },
-                  { label: 'Completed Cycles', value: cycles.completedCycles?.length || 0, sub: 'Historical rounds', color: '#c8a96e' },
+                  { label: 'Completed Cycles', value: cycles.completedCycles?.length || 0, sub: 'Historical rounds', color: '#00e87a' },
                 ].map((s, i) => (
                   <div key={i} style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: '18px 20px', transition: 'border-color 0.15s' }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>{s.label}</div>
@@ -137,13 +137,13 @@ function Dashboard() {
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>Active Cycle</div>
                   {cycles.activeCycle ? (
-                    <div style={{ background: '#0c0c0c', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 12, padding: 22 }}>
+                    <div style={{ background: '#0c0c0c', border: '1px solid rgba(0,232,122,0.15)', borderRadius: 12, padding: 22 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
                         <div>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'rgba(200,169,110,0.08)', border: '1px solid rgba(200,169,110,0.12)', borderRadius: 20, fontSize: 9, fontWeight: 700, color: '#c8a96e', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', background: 'rgba(0,232,122,0.08)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 20, fontSize: 9, fontWeight: 700, color: '#00e87a', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
                             ● Active
                           </div>
-                          <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 26, fontWeight: 700, color: '#c8a96e' }}>{fmt(cycles.activeCycle.amount)}</div>
+                          <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 26, fontWeight: 700, color: '#00e87a' }}>{fmt(cycles.activeCycle.amount)}</div>
                           <div style={{ fontSize: 11, color: '#3a3734', marginTop: 4 }}>Under management</div>
                         </div>
                         <div style={{ textAlign: 'right', fontSize: 12, color: '#524f4b' }}>
@@ -156,7 +156,7 @@ function Dashboard() {
                         <span>{Math.round(cyclePct(cycles.activeCycle.start_date, cycles.activeCycle.end_date))}%</span>
                       </div>
                       <div style={{ height: 3, background: '#1e1e1e', borderRadius: 2, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${cyclePct(cycles.activeCycle.start_date, cycles.activeCycle.end_date)}%`, background: 'linear-gradient(90deg,#c8a96e,#3ecf8e)', borderRadius: 2, transition: 'width 0.6s ease' }}></div>
+                        <div style={{ height: '100%', width: `${cyclePct(cycles.activeCycle.start_date, cycles.activeCycle.end_date)}%`, background: 'linear-gradient(90deg,#00e87a,#3ecf8e)', borderRadius: 2, transition: 'width 0.6s ease' }}></div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#3a3734', marginTop: 8 }}>
                         <span>{fmtDate(cycles.activeCycle.start_date)}</span>

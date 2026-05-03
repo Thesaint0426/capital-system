@@ -32,43 +32,43 @@ export default function ApplyPage() {
       <Head><title>Apply for Membership — Capital Invest</title></Head>
 
       <style>{`
-        .apply-page { min-height:100vh; background:#080808; color:#f5f3ef; font-family:'Manrope',sans-serif; display:flex; flex-direction:column; }
+        .apply-page { min-height:100vh; background:#080808; color:#f5f3ef; font-family:'DM Sans',sans-serif; display:flex; flex-direction:column; }
         .apply-nav { height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 60px; border-bottom:1px solid #141414; }
-        .apply-logo { font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; }
-        .apply-logo span { color:#c8a96e; }
+        .apply-logo { font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; }
+        .apply-logo span { color:#00e87a; }
         .apply-back { font-size:12px; color:#524f4b; cursor:pointer; transition:color 0.2s; letter-spacing:0.04em; }
         .apply-back:hover { color:#f5f3ef; }
         .apply-body { flex:1; display:flex; align-items:center; justify-content:center; padding:60px 24px; }
         .apply-wrap { width:100%; max-width:560px; }
-        .apply-eyebrow { font-size:10px; font-weight:700; color:#c8a96e; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; }
-        .apply-title { font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; letter-spacing:-0.02em; margin-bottom:8px; }
+        .apply-eyebrow { font-size:10px; font-weight:700; color:#00e87a; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; }
+        .apply-title { font-family:'DM Sans',sans-serif; font-size:28px; font-weight:700; letter-spacing:-0.02em; margin-bottom:8px; }
         .apply-sub { font-size:13px; color:#8b8680; line-height:1.6; margin-bottom:32px; }
         .apply-card { background:#0c0c0c; border:1px solid #1e1e1e; border-radius:16px; padding:32px; }
         .apply-form { display:flex; flex-direction:column; gap:20px; }
         .field { display:flex; flex-direction:column; gap:6px; }
         .field-label { font-size:10px; font-weight:700; color:#524f4b; letter-spacing:0.1em; text-transform:uppercase; }
-        .input { background:#080808; border:1px solid #252525; border-radius:7px; padding:11px 14px; color:#f5f3ef; font-family:'Manrope',sans-serif; font-size:13px; outline:none; transition:border-color 0.15s; width:100%; }
-        .input:focus { border-color:#c8a96e; }
+        .input { background:#080808; border:1px solid #252525; border-radius:7px; padding:11px 14px; color:#f5f3ef; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color 0.15s; width:100%; }
+        .input:focus { border-color:#00e87a; }
         .input::placeholder { color:#3a3734; }
         select.input { cursor:pointer; }
         textarea.input { resize:vertical; min-height:80px; line-height:1.5; }
         .checkbox-row { display:flex; gap:12px; align-items:flex-start; cursor:pointer; }
-        .checkbox-row input { width:16px; height:16px; margin-top:2px; accent-color:#c8a96e; cursor:pointer; flex-shrink:0; }
+        .checkbox-row input { width:16px; height:16px; margin-top:2px; accent-color:#00e87a; cursor:pointer; flex-shrink:0; }
         .checkbox-label { font-size:12px; color:#8b8680; line-height:1.6; }
-        .checkbox-label a { color:#c8a96e; }
-        .btn-submit { width:100%; padding:13px; background:#c8a96e; border:none; border-radius:7px; color:#000; font-family:'Manrope',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0.05em; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:8px; }
-        .btn-submit:hover { background:#e0c07a; box-shadow:0 8px 28px rgba(200,169,110,0.2); }
+        .checkbox-label a { color:#00e87a; }
+        .btn-submit { width:100%; padding:13px; background:#00e87a; border:none; border-radius:7px; color:#000; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0.05em; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:8px; }
+        .btn-submit:hover { background:#00cc6a; box-shadow:0 8px 28px rgba(0,232,122,0.2); }
         .btn-submit:disabled { opacity:0.5; cursor:not-allowed; }
         .apply-note { font-size:11px; color:#3a3734; text-align:center; margin-top:14px; line-height:1.5; }
         .apply-divider { height:1px; background:#141414; }
 
         /* SUCCESS */
-        .success-card { background:#0c0c0c; border:1px solid rgba(200,169,110,0.2); border-radius:16px; padding:48px 32px; text-align:center; }
+        .success-card { background:#0c0c0c; border:1px solid rgba(0,232,122,0.2); border-radius:16px; padding:48px 32px; text-align:center; }
         .success-icon { font-size:40px; margin-bottom:20px; }
-        .success-title { font-family:'Space Grotesk',sans-serif; font-size:24px; font-weight:700; letter-spacing:-0.02em; margin-bottom:10px; }
+        .success-title { font-family:'DM Sans',sans-serif; font-size:24px; font-weight:700; letter-spacing:-0.02em; margin-bottom:10px; }
         .success-text { font-size:14px; color:#8b8680; line-height:1.7; max-width:400px; margin:0 auto 24px; }
         .success-detail { background:#080808; border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-size:12px; color:#524f4b; line-height:1.6; text-align:left; margin-bottom:20px; }
-        .btn-back-home { padding:11px 24px; background:transparent; border:1px solid #252525; border-radius:7px; color:#f5f3ef; font-family:'Manrope',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .btn-back-home { padding:11px 24px; background:transparent; border:1px solid #252525; border-radius:7px; color:#f5f3ef; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
         .btn-back-home:hover { border-color:#3a3734; background:#141414; }
 
         @media(max-width:600px) {

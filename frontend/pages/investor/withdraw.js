@@ -57,8 +57,8 @@ function WithdrawPage() {
   };
 
   const statusStyle = (s) => ({
-    active: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.12)' },
-    pending: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.12)' },
+    active: { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.12)' },
+    pending: { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.12)' },
     approved: { bg: 'rgba(62,207,142,0.08)', color: '#3ecf8e', border: 'rgba(62,207,142,0.12)' },
     rejected: { bg: 'rgba(248,113,113,0.08)', color: '#f87171', border: 'rgba(248,113,113,0.12)' },
     paid: { bg: 'rgba(96,165,250,0.08)', color: '#60a5fa', border: 'rgba(96,165,250,0.12)' },
@@ -66,7 +66,7 @@ function WithdrawPage() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -74,11 +74,11 @@ function WithdrawPage() {
   return (
     <>
       <Head><title>Withdraw — Capital Invest</title></Head>
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope,sans-serif', color: '#f5f3ef' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
         <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Withdrawal Request</h1>
+            <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Withdrawal Request</h1>
             <div style={{ fontSize: 13, color: '#524f4b' }}>Submit a withdrawal from your available balance</div>
           </div>
 
@@ -89,15 +89,15 @@ function WithdrawPage() {
               <div style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: 22 }}>
 
                 {/* Alerts */}
-                {!account && <div style={{ padding: '11px 14px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.12)', borderRadius: 7, fontSize: 12, color: '#c8a96e', marginBottom: 16 }}>Account not yet activated.</div>}
+                {!account && <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>Account not yet activated.</div>}
                 {activeCycle && <div style={{ padding: '11px 14px', background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.12)', borderRadius: 7, fontSize: 12, color: '#f87171', marginBottom: 16 }}>Withdrawals are not available during an active cycle. Please wait for your current cycle to complete.</div>}
-                {hasPending && <div style={{ padding: '11px 14px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.12)', borderRadius: 7, fontSize: 12, color: '#c8a96e', marginBottom: 16 }}>You have a pending withdrawal request. Wait for admin processing before submitting a new one.</div>}
+                {hasPending && <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>You have a pending withdrawal request. Wait for admin processing before submitting a new one.</div>}
 
                 {/* Balance display */}
                 {account && (
                   <div style={{ background: '#080808', border: '1px solid #141414', borderRadius: 8, padding: '14px 16px', marginBottom: 18 }}>
                     <div style={{ fontSize: 10, color: '#3a3734', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Available Balance</div>
-                    <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 24, fontWeight: 700, color: '#c8a96e' }}>{fmt(balance)}</div>
+                    <div style={{ fontFamily: 'Space Mono,monospace', fontSize: 24, fontWeight: 700, color: '#00e87a' }}>{fmt(balance)}</div>
                   </div>
                 )}
 
@@ -105,12 +105,12 @@ function WithdrawPage() {
                   <div>
                     <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#524f4b', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Amount (USD)</label>
                     <input
-                      style={{ background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'Manrope,sans-serif', fontSize: 14, width: '100%', outline: 'none', transition: 'border-color 0.15s' }}
+                      style={{ background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'DM Sans,sans-serif', fontSize: 14, width: '100%', outline: 'none', transition: 'border-color 0.15s' }}
                       type="number" step="0.01" min="1" max={balance}
                       placeholder="0.00" value={amount}
                       onChange={e => setAmount(e.target.value)}
                       disabled={!canWithdraw}
-                      onFocus={e => e.target.style.borderColor = '#c8a96e'}
+                      onFocus={e => e.target.style.borderColor = '#00e87a'}
                       onBlur={e => e.target.style.borderColor = '#252525'}
                     />
                   </div>
@@ -118,7 +118,7 @@ function WithdrawPage() {
                   <div>
                     <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#524f4b', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Network</label>
                     <select
-                      style={{ background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'Manrope,sans-serif', fontSize: 13, width: '100%', outline: 'none', cursor: 'pointer' }}
+                      style={{ background: '#080808', border: '1px solid #252525', borderRadius: 7, padding: '11px 14px', color: '#f5f3ef', fontFamily: 'DM Sans,sans-serif', fontSize: 13, width: '100%', outline: 'none', cursor: 'pointer' }}
                       value={network} onChange={e => setNetwork(e.target.value)} disabled={!canWithdraw}>
                       <option value="USDT_TRC20">USDT — TRC20 (Tron)</option>
                       <option value="USDT_ERC20">USDT — ERC20 (Ethereum)</option>
@@ -136,7 +136,7 @@ function WithdrawPage() {
                       type="text" placeholder="Enter your wallet address..."
                       value={walletAddress} onChange={e => setWalletAddress(e.target.value)}
                       disabled={!canWithdraw}
-                      onFocus={e => e.target.style.borderColor = '#c8a96e'}
+                      onFocus={e => e.target.style.borderColor = '#00e87a'}
                       onBlur={e => e.target.style.borderColor = '#252525'}
                     />
                   </div>
@@ -163,7 +163,7 @@ function WithdrawPage() {
                   <button
                     type="submit"
                     disabled={!canWithdraw || submitting || parsedAmount <= 0 || !walletAddress.trim()}
-                    style={{ padding: '12px', background: canWithdraw && parsedAmount > 0 && walletAddress ? '#c8a96e' : '#1e1e1e', border: 'none', borderRadius: 7, color: canWithdraw && parsedAmount > 0 && walletAddress ? '#000' : '#3a3734', fontFamily: 'Manrope,sans-serif', fontSize: 13, fontWeight: 700, cursor: canWithdraw ? 'pointer' : 'not-allowed', transition: 'all 0.2s', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    style={{ padding: '12px', background: canWithdraw && parsedAmount > 0 && walletAddress ? '#00e87a' : '#1e1e1e', border: 'none', borderRadius: 7, color: canWithdraw && parsedAmount > 0 && walletAddress ? '#000' : '#3a3734', fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 700, cursor: canWithdraw ? 'pointer' : 'not-allowed', transition: 'all 0.2s', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                     {submitting ? <><div style={{ width: 14, height: 14, border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#000', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>Processing...</> : 'Submit Request'}
                   </button>
                 </form>

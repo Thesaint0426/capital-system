@@ -34,29 +34,29 @@ function AdminOverview() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#c8a96e', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
+      <div style={{ width: 24, height: 24, border: '2px solid #1e1e1e', borderTopColor: '#00e87a', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }}></div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
   const KPIs = [
-    { label: 'Total AUM', value: fmt(totalAUM), sub: 'Assets under management', color: '#c8a96e' },
+    { label: 'Total AUM', value: fmt(totalAUM), sub: 'Assets under management', color: '#00e87a' },
     { label: 'Total Performance', value: `${totalProfit >= 0 ? '+' : ''}${fmt(totalProfit)}`, sub: 'Across all members', color: totalProfit >= 0 ? '#3ecf8e' : '#f87171' },
     { label: 'Active Members', value: members.length, sub: 'Activated accounts', color: '#f5f3ef' },
-    { label: 'Active Cycles', value: activeCycles, sub: 'Running now', color: '#c8a96e' },
+    { label: 'Active Cycles', value: activeCycles, sub: 'Running now', color: '#00e87a' },
     { label: 'Pending Withdrawals', value: pendingW, sub: 'Awaiting approval', color: pendingW > 0 ? '#f87171' : '#3a3734' },
-    { label: 'Pending Applications', value: pendingApps, sub: 'Under review', color: pendingApps > 0 ? '#c8a96e' : '#3a3734' },
+    { label: 'Pending Applications', value: pendingApps, sub: 'Under review', color: pendingApps > 0 ? '#00e87a' : '#3a3734' },
   ];
 
   return (
     <>
       <Head><title>Admin Overview — Capital Invest</title></Head>
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope,sans-serif', color: '#f5f3ef' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
         <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
 
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: 'Space Grotesk,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Admin Overview</h1>
+            <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Admin Overview</h1>
             <div style={{ fontSize: 13, color: '#524f4b' }}>Platform performance snapshot</div>
           </div>
 
@@ -67,7 +67,7 @@ function AdminOverview() {
             </div>
           )}
           {pendingApps > 0 && (
-            <div style={{ padding: '11px 16px', background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.15)', borderRadius: 8, fontSize: 12, color: '#c8a96e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ padding: '11px 16px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.15)', borderRadius: 8, fontSize: 12, color: '#00e87a', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
               ◈ {pendingApps} membership application{pendingApps > 1 ? 's' : ''} awaiting review
             </div>
           )}
@@ -112,7 +112,7 @@ function AdminOverview() {
                       </td>
                       <td style={{ padding: '13px 14px' }}>
                         {parseInt(m.active_cycles) > 0
-                          ? <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: '1px solid rgba(200,169,110,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>● Active</span>
+                          ? <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: 'rgba(0,232,122,0.08)', color: '#00e87a', border: '1px solid rgba(0,232,122,0.12)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>● Active</span>
                           : <span style={{ color: '#3a3734', fontSize: 12 }}>None</span>}
                       </td>
                       <td style={{ padding: '13px 14px' }}>
@@ -152,9 +152,9 @@ function AdminOverview() {
                         <td style={{ padding: '11px 12px' }}>
                           <span style={{
                             display: 'inline-flex', padding: '1px 7px', borderRadius: 20, fontSize: 8, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase',
-                            background: c.status === 'active' ? 'rgba(200,169,110,0.08)' : 'rgba(96,165,250,0.08)',
-                            color: c.status === 'active' ? '#c8a96e' : '#60a5fa',
-                            border: `1px solid ${c.status === 'active' ? 'rgba(200,169,110,0.12)' : 'rgba(96,165,250,0.12)'}`,
+                            background: c.status === 'active' ? 'rgba(0,232,122,0.08)' : 'rgba(96,165,250,0.08)',
+                            color: c.status === 'active' ? '#00e87a' : '#60a5fa',
+                            border: `1px solid ${c.status === 'active' ? 'rgba(0,232,122,0.12)' : 'rgba(96,165,250,0.12)'}`,
                           }}>{c.status}</span>
                         </td>
                         <td style={{ padding: '11px 12px', fontFamily: 'Space Mono,monospace', fontSize: 11, color: c.profit_loss !== null ? (parseFloat(c.profit_loss) >= 0 ? '#3ecf8e' : '#f87171') : '#3a3734' }}>
@@ -183,7 +183,7 @@ function AdminOverview() {
                   <tbody>
                     {withdrawals.slice(0, 6).map(w => {
                       const sc = {
-                        pending: { bg: 'rgba(200,169,110,0.08)', color: '#c8a96e', border: 'rgba(200,169,110,0.12)' },
+                        pending: { bg: 'rgba(0,232,122,0.08)', color: '#00e87a', border: 'rgba(0,232,122,0.12)' },
                         approved: { bg: 'rgba(62,207,142,0.08)', color: '#3ecf8e', border: 'rgba(62,207,142,0.12)' },
                         rejected: { bg: 'rgba(248,113,113,0.08)', color: '#f87171', border: 'rgba(248,113,113,0.12)' },
                       }[w.status] || { bg: 'rgba(82,79,75,0.1)', color: '#524f4b', border: 'rgba(82,79,75,0.1)' };
