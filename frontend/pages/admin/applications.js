@@ -56,7 +56,7 @@ function AdminApplications() {
       <Head><title>Applications — Capital Invest Admin</title></Head>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
-        <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
+        <main style={{ marginLeft: 'var(--sidebar-offset, 220px)', flex: 1, padding: '40px' }}>
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
               <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Membership Applications</h1>

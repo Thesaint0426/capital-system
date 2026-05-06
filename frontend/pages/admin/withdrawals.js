@@ -61,11 +61,11 @@ function AdminWithdrawals() {
       <Head><title>Withdrawals — Capital Invest Admin</title></Head>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
-        <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
+        <main style={{ marginLeft: 'var(--sidebar-offset, 220px)', flex: 1, padding: '40px' }}>
 
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Withdrawal Requests</h1>
+              <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Liquidity Requests</h1>
               <div style={{ fontSize: 13, color: '#524f4b' }}>{pending.length} pending · {withdrawals.length} total</div>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -143,7 +143,7 @@ function AdminWithdrawals() {
               </div>
               {filtered.length === 0 ? (
                 <div style={{ background: '#0c0c0c', border: '1px solid #1e1e1e', borderRadius: 12, padding: 40, textAlign: 'center', color: '#3a3734', fontSize: 13 }}>
-                  No {filter} withdrawal requests
+                  No {filter} liquidity requests
                 </div>
               ) : (
                 <div style={{ border: '1px solid #1e1e1e', borderRadius: 12, overflow: 'hidden' }}>
@@ -197,7 +197,7 @@ function AdminWithdrawals() {
             <div style={{ fontSize: 13, color: '#524f4b', marginBottom: 20 }}>
               {actionModal.action === 'approve'
                 ? `Confirm approval for ${actionModal.name}. Net payout: ${fmt(actionModal.amount)}`
-                : `Reject withdrawal request from ${actionModal.name}`}
+                : `Reject liquidity request from ${actionModal.name}`}
             </div>
             {actionModal.action === 'approve' && (
               <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>

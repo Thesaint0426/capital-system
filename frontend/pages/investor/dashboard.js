@@ -87,13 +87,13 @@ function Dashboard() {
       <Head><title>Dashboard — Capital Invest</title></Head>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'Manrope, sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
-        <main style={{ marginLeft: 220, flex: 1, padding: '40px', minHeight: '100vh' }}>
+        <main style={{ marginLeft: 'var(--sidebar-offset, 220px)', flex: 1, padding: '40px', minHeight: '100vh' }}>
 
           {/* Header */}
           <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
             <div>
               <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>
-                Member Dashboard
+                Investor Interface
               </h1>
               <div style={{ fontSize: 13, color: '#524f4b' }}>Welcome back, {user?.name}</div>
             </div>

@@ -53,7 +53,7 @@ function AdminOverview() {
       <Head><title>Admin Overview — Capital Invest</title></Head>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
-        <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
+        <main style={{ marginLeft: 'var(--sidebar-offset, 220px)', flex: 1, padding: '40px' }}>
 
           <div style={{ marginBottom: 32 }}>
             <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Admin Overview</h1>
@@ -63,7 +63,7 @@ function AdminOverview() {
           {/* Alerts */}
           {pendingW > 0 && (
             <div style={{ padding: '11px 16px', background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: 8, fontSize: 12, color: '#f87171', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-              ⚠ {pendingW} withdrawal request{pendingW > 1 ? 's' : ''} pending your review
+              ⚠ {pendingW} liquidity request{pendingW > 1 ? 's' : ''} pending your review
             </div>
           )}
           {pendingApps > 0 && (

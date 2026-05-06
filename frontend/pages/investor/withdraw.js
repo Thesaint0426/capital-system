@@ -76,9 +76,9 @@ function WithdrawPage() {
       <Head><title>Withdraw — Capital Invest</title></Head>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#080808', fontFamily: 'DM Sans,sans-serif', color: '#f5f3ef' }}>
         <Sidebar />
-        <main style={{ marginLeft: 220, flex: 1, padding: '40px' }}>
+        <main style={{ marginLeft: 'var(--sidebar-offset, 220px)', flex: 1, padding: '40px' }}>
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Withdrawal Request</h1>
+            <h1 style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 3 }}>Liquidity Request</h1>
             <div style={{ fontSize: 13, color: '#524f4b' }}>Submit a withdrawal from your available balance</div>
           </div>
 
@@ -91,7 +91,7 @@ function WithdrawPage() {
                 {/* Alerts */}
                 {!account && <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>Account not yet activated.</div>}
                 {activeCycle && <div style={{ padding: '11px 14px', background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.12)', borderRadius: 7, fontSize: 12, color: '#f87171', marginBottom: 16 }}>Withdrawals are not available during an active cycle. Please wait for your current cycle to complete.</div>}
-                {hasPending && <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>You have a pending withdrawal request. Wait for admin processing before submitting a new one.</div>}
+                {hasPending && <div style={{ padding: '11px 14px', background: 'rgba(0,232,122,0.06)', border: '1px solid rgba(0,232,122,0.12)', borderRadius: 7, fontSize: 12, color: '#00e87a', marginBottom: 16 }}>You have a pending liquidity request. Wait for admin processing before submitting a new one.</div>}
 
                 {/* Balance display */}
                 {account && (
@@ -170,7 +170,7 @@ function WithdrawPage() {
               </div>
 
               <div style={{ marginTop: 12, padding: '11px 14px', background: '#080808', border: '1px solid #141414', borderRadius: 7, fontSize: 11, color: '#3a3734', lineHeight: 1.6 }}>
-                ⚠ Withdrawal requests are reviewed and processed within 24–48 hours. Ensure your wallet address is correct before submitting. We are not liable for funds sent to incorrect addresses.
+                ⚠ Liquidity requests are reviewed and processed within 24–48 hours. Ensure your wallet address is correct before submitting. We are not liable for funds sent to incorrect addresses.
               </div>
             </div>
 

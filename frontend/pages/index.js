@@ -195,6 +195,23 @@ export default function Landing() {
         .d4 { transition-delay:0.28s; }
         .d5 { transition-delay:0.36s; }
 
+
+        /* ROI SECTION */
+        .roi-section { padding:100px 60px; background:#080808; position:relative; overflow:hidden; }
+        .roi-section-inner { max-width:1140px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+        .roi-glow { position:absolute; left:10%; top:50%; transform:translateY(-50%); width:500px; height:500px; background:radial-gradient(circle, rgba(0,232,122,0.06) 0%, transparent 70%); pointer-events:none; }
+        .roi-number { font-family:'Cormorant Garamond',serif; font-size:clamp(80px,12vw,140px); font-weight:300; line-height:1; color:#f5f3ef; letter-spacing:-0.04em; }
+        .roi-number span { color:#00e87a; }
+        .roi-label { font-size:16px; color:#524f4b; letter-spacing:0.12em; text-transform:uppercase; margin-top:8px; }
+        .roi-right-title { font-family:'Cormorant Garamond',serif; font-size:clamp(32px,4vw,48px); font-weight:400; line-height:1.15; margin-bottom:18px; letter-spacing:-0.02em; }
+        .roi-right-title em { font-style:italic; color:#00e87a; }
+        .roi-right-sub { font-size:15px; color:#8b8680; line-height:1.75; margin-bottom:28px; font-weight:300; max-width:420px; }
+        .roi-disclaimer { font-size:11px; color:#3a3734; line-height:1.6; padding:12px 14px; background:#0c0c0c; border:1px solid #141414; border-radius:7px; }
+        .roi-stats { display:flex; gap:32px; margin-bottom:28px; }
+        .roi-stat-val { font-family:'Space Mono',monospace; font-size:24px; font-weight:700; color:#00e87a; }
+        .roi-stat-lbl { font-size:10px; color:#3a3734; text-transform:uppercase; letter-spacing:0.1em; margin-top:3px; }
+        @media(max-width:900px){ .roi-section{padding:60px 24px;} .roi-section-inner{grid-template-columns:1fr;gap:32px;} }
+
         /* RESPONSIVE */
         @media(max-width:900px){
           .lp-nav{padding:0 24px;} .lp-nav-links{display:none;}
@@ -229,7 +246,7 @@ export default function Landing() {
           <ul className="lp-nav-links">
             <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})}>How It Works</a></li>
             <li><a onClick={() => document.getElementById('performance').scrollIntoView({behavior:'smooth'})}>Performance</a></li>
-            <li><a onClick={() => document.getElementById('faq').scrollIntoView({behavior:'smooth'})}>FAQ</a></li>
+            <li><a href='/faq'>FAQ</a></li>
           </ul>
           <div className="lp-nav-actions">
             <button className="btn-nav-login" onClick={() => window.location.href='/login'}>Member Login</button>
@@ -413,7 +430,48 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* EXCLUSIVITY */}
+
+        {/* ROI SECTION */}
+        <section style={{background:'#080808',borderTop:'1px solid #141414'}}>
+          <div className="roi-section">
+            <div className="roi-glow"></div>
+            <div className="roi-section-inner">
+              <div style={{position:'relative',zIndex:1}}>
+                <div className="roi-number"><span>20</span>%</div>
+                <div className="roi-label">Monthly Return — Historical Average</div>
+              </div>
+              <div style={{position:'relative',zIndex:1}}>
+                <h2 className="roi-right-title reveal">
+                  Grow your capital by <em>20% every month</em> — from anywhere in the world.
+                </h2>
+                <p className="roi-right-sub reveal d1">
+                  Based on historical cycle performance, Capital Invest members have consistently experienced returns averaging 20% per month. All from the comfort of your home, with full visibility through your private Investor Interface.
+                </p>
+                <div className="roi-stats reveal d2">
+                  <div>
+                    <div className="roi-stat-val">+20%</div>
+                    <div className="roi-stat-lbl">Avg. Monthly Return</div>
+                  </div>
+                  <div style={{width:1,background:'#1e1e1e'}}></div>
+                  <div>
+                    <div className="roi-stat-val">30d</div>
+                    <div className="roi-stat-lbl">Per Cycle</div>
+                  </div>
+                  <div style={{width:1,background:'#1e1e1e'}}></div>
+                  <div>
+                    <div className="roi-stat-val">100%</div>
+                    <div className="roi-stat-lbl">Transparent</div>
+                  </div>
+                </div>
+                <div className="roi-disclaimer reveal d3">
+                  ⚠ Based on historical cycle data only. Returns are not guaranteed. Capital at risk. Past performance does not predict future results. Please read our full Risk Disclosure before participating.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* EXCLUSIVITY */
         <section>
           <div className="lp-section">
             <div className="eyebrow reveal">Membership Model</div>
@@ -473,37 +531,37 @@ export default function Landing() {
               <div>
                 <div className="footer-col-title">Platform</div>
                 <ul className="footer-links">
-                  <li><a onClick={() => window.location.href='/login'}>Member Login</a></li>
-                  <li><a onClick={() => window.location.href='/apply'}>Apply for Access</a></li>
-                  <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})}>How It Works</a></li>
-                  <li><a onClick={() => document.getElementById('performance').scrollIntoView({behavior:'smooth'})}>Performance</a></li>
+                  <li><a href="/login">Member Login</a></li>
+                  <li><a href="/apply">Apply for Access</a></li>
+                  <li><a onClick={() => document.getElementById('how').scrollIntoView({behavior:'smooth'})} style={{cursor:'pointer'}}>How It Works</a></li>
+                  <li><a href="/faq">FAQ</a></li>
                 </ul>
               </div>
               <div>
                 <div className="footer-col-title">Membership</div>
                 <ul className="footer-links">
-                  <li><a onClick={() => document.getElementById('faq').scrollIntoView({behavior:'smooth'})}>FAQ</a></li>
-                  <li><a href="#">Risk Disclosure</a></li>
-                  <li><a href="#">Withdrawal Policy</a></li>
-                  <li><a href="#">Contact</a></li>
+                  <li><a href="/risk">Risk Disclosure</a></li>
+                  <li><a href="/withdrawal-policy">Liquidity Policy</a></li>
+                  <li><a href="/compliance">Compliance</a></li>
+                  <li><a href="mailto:contact@capitalinvest.live">Contact Us</a></li>
                 </ul>
               </div>
               <div>
                 <div className="footer-col-title">Legal</div>
                 <ul className="footer-links">
-                  <li><a href="#">Terms of Service</a></li>
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Risk Disclosure</a></li>
-                  <li><a href="#">Compliance</a></li>
+                  <li><a href="/terms">Terms of Service</a></li>
+                  <li><a href="/privacy">Privacy Policy</a></li>
+                  <li><a href="/risk">Risk Disclosure</a></li>
+                  <li><a href="/compliance">Compliance</a></li>
                 </ul>
               </div>
             </div>
             <div className="footer-bottom">
               <div>© 2025 Capital Invest. All rights reserved.</div>
               <div className="footer-legal">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-                <a href="#">Risk</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+                <a href="/risk">Risk</a>
               </div>
             </div>
             <div className="footer-disclaimer">

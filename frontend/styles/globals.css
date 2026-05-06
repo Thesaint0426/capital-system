@@ -773,3 +773,16 @@ tbody td {
   .main-content { margin-left: 56px; padding: 24px 16px; max-width: calc(100vw - 56px); }
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* Mobile sidebar offset */
+:root {
+  --sidebar-offset: 220px;
+}
+@media (max-width: 768px) {
+  :root { --sidebar-offset: 0px; }
+  .main-content {
+    margin-left: 0 !important;
+    padding: 24px 16px 24px 16px !important;
+    padding-top: 64px !important;
+  }
+}
