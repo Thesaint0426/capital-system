@@ -7,11 +7,13 @@ const bcrypt = require('bcryptjs');
 
 router.use(authenticateToken, requireAdmin);
 
+// ── USERS ──
+
 // GET /api/admin/users
 router.get('/users', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT u.id, u.name, u.email, u.role, u.created_at,
+      SELECT u.id, u.name, u.email, u.role, u.status, u.admin_note, u.created_at,
              a.current_balance, a.initial_deposit,
              (a.current_balance - a.initial_deposit) AS total_profit,
              (SELECT COUNT(*) FROM investment_cycles ic WHERE ic.user_id = u.id AND ic.status = 'active') AS active_cycles,
@@ -20,6 +22,52 @@ router.get('/users', async (req, res) => {
       WHERE u.role = 'investor' ORDER BY u.created_at DESC`
     );
     res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/admin/users - create investor directly
+router.post('/users', [
+  body('name').trim().notEmpty().withMessage('Name required'),
+  body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
+  body('password').isLength({ min: 6 }).withMessage('Password min 6 chars'),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+  const { name, email, password, admin_note } = req.body;
+  try {
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existing.rows.length) return res.status(409).json({ error: 'Email already registered' });
+
+    const hash = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      'INSERT INTO users (name, email, password_hash, role, admin_note) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role',
+      [name, email, hash, 'investor', admin_note || null]
+    );
+    res.status(201).json({ message: 'Investor created', user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// PATCH /api/admin/users/:id - update note or status
+router.patch('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { admin_note, status } = req.body;
+  try {
+    const fields = [];
+    const vals = [];
+    if (admin_note !== undefined) { fields.push(`admin_note=$${fields.length+1}`); vals.push(admin_note); }
+    if (status !== undefined) { fields.push(`status=$${fields.length+1}`); vals.push(status); }
+    if (!fields.length) return res.status(400).json({ error: 'Nothing to update' });
+    vals.push(id);
+    const result = await pool.query(`UPDATE users SET ${fields.join(',')} WHERE id=$${vals.length} AND role='investor' RETURNING id,name,email,status,admin_note`, vals);
+    if (!result.rows.length) return res.status(404).json({ error: 'User not found' });
+    res.json({ message: 'Updated', user: result.rows[0] });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -43,6 +91,40 @@ router.post('/account', [
       [user_id, initial_deposit]
     );
     res.status(201).json({ message: 'Account activated', account: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/admin/account/:id/credit - add funds to existing account
+router.post('/account/:user_id/credit', [
+  body('amount').isFloat({ gt: 0 }),
+], async (req, res) => {
+  const { user_id } = req.params;
+  const { amount, note } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE accounts SET current_balance=current_balance+$1, updated_at=NOW() WHERE user_id=$2 RETURNING *',
+      [amount, user_id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Account not found' });
+    res.json({ message: 'Balance updated', account: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── CYCLES ──
+
+// GET /api/admin/cycles
+router.get('/cycles', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT ic.*, u.name AS user_name, u.email AS user_email
+      FROM investment_cycles ic JOIN users u ON u.id = ic.user_id
+      ORDER BY ic.created_at DESC`
+    );
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -124,19 +206,7 @@ router.post('/close-cycle', [
   }
 });
 
-// GET /api/admin/cycles
-router.get('/cycles', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT ic.*, u.name AS user_name, u.email AS user_email
-      FROM investment_cycles ic JOIN users u ON u.id = ic.user_id
-      ORDER BY ic.created_at DESC`
-    );
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+// ── WITHDRAWALS ──
 
 // GET /api/admin/withdrawals
 router.get('/withdrawals', async (req, res) => {
@@ -190,6 +260,22 @@ router.post('/withdrawal/:id/reject', async (req, res) => {
   }
 });
 
+// POST /api/admin/withdrawal/:id/paid - mark as paid after bank/crypto transfer
+router.post('/withdrawal/:id/paid', async (req, res) => {
+  const { id } = req.params;
+  const { admin_note } = req.body;
+  try {
+    const result = await pool.query(
+      "UPDATE withdrawals SET status='paid', paid_at=NOW(), admin_note=COALESCE($1,admin_note) WHERE id=$2 AND status='approved' RETURNING *",
+      [admin_note || null, id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Approved withdrawal not found' });
+    res.json({ message: 'Withdrawal marked as paid' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // ── APPLICATIONS ──
 
 // GET /api/admin/applications
@@ -202,10 +288,12 @@ router.get('/applications', async (req, res) => {
   }
 });
 
-// POST /api/admin/application/:id/approve
-// Creates a user account for the applicant
-router.post('/application/:id/approve', async (req, res) => {
+// POST /api/admin/application/:id/approve — creates user + optionally sets a temp password
+router.post('/application/:id/approve', [
+  body('temp_password').optional().isLength({ min: 6 }),
+], async (req, res) => {
   const { id } = req.params;
+  const { temp_password } = req.body;
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -213,17 +301,18 @@ router.post('/application/:id/approve', async (req, res) => {
     if (!appResult.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Pending application not found' }); }
 
     const app = appResult.rows[0];
+    let created = false;
+    let generatedPassword = null;
 
-    // Check if user already exists
     const existing = await client.query('SELECT id FROM users WHERE email=$1', [app.email]);
     if (!existing.rows.length) {
-      // Create user with temporary password (they'll need to reset)
-      const tempPassword = Math.random().toString(36).slice(-10) + 'A1!';
-      const hash = await bcrypt.hash(tempPassword, 10);
+      generatedPassword = temp_password || (Math.random().toString(36).slice(-8) + 'A1!');
+      const hash = await bcrypt.hash(generatedPassword, 10);
       await client.query(
         'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4)',
         [app.name, app.email, hash, 'investor']
       );
+      created = true;
     }
 
     await client.query(
@@ -231,7 +320,11 @@ router.post('/application/:id/approve', async (req, res) => {
       [req.user.id, id]
     );
     await client.query('COMMIT');
-    res.json({ message: 'Application approved — user account created' });
+    res.json({
+      message: 'Application approved — user account created',
+      user_created: created,
+      temp_password: created ? generatedPassword : null,
+    });
   } catch (err) {
     await client.query('ROLLBACK');
     res.status(500).json({ error: 'Server error' });
@@ -250,6 +343,28 @@ router.post('/application/:id/reject', async (req, res) => {
     );
     if (!result.rows.length) return res.status(404).json({ error: 'Application not found' });
     res.json({ message: 'Application rejected' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── STATS ──
+
+// GET /api/admin/stats - dashboard summary
+router.get('/stats', async (req, res) => {
+  try {
+    const [members, cycles, withdrawals, apps] = await Promise.all([
+      pool.query("SELECT COUNT(*) AS total, SUM(a.current_balance) AS aum, SUM(a.current_balance - a.initial_deposit) AS profit FROM users u LEFT JOIN accounts a ON a.user_id=u.id WHERE u.role='investor'"),
+      pool.query("SELECT COUNT(*) FILTER (WHERE status='active') AS active, COUNT(*) FILTER (WHERE status='completed') AS completed FROM investment_cycles"),
+      pool.query("SELECT COUNT(*) FILTER (WHERE status='pending') AS pending, SUM(amount) FILTER (WHERE status='pending') AS pending_amount FROM withdrawals"),
+      pool.query("SELECT COUNT(*) FILTER (WHERE status='pending') AS pending FROM applications"),
+    ]);
+    res.json({
+      members: members.rows[0],
+      cycles: cycles.rows[0],
+      withdrawals: withdrawals.rows[0],
+      applications: apps.rows[0],
+    });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }

@@ -7,6 +7,7 @@ const investorNav = [
   { href: '/investor/dashboard', icon: '◈', label: 'Investor Interface' },
   { href: '/investor/cycles', icon: '⟳', label: 'My Cycles' },
   { href: '/investor/withdraw', icon: '↗', label: 'Liquidity Request' },
+  { href: '/investor/profile', icon: '⬡', label: 'Account Settings' },
 ];
 
 const adminNav = [
@@ -109,7 +110,7 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* User */}
+        {/* User footer */}
         <div style={{ padding:'14px 20px', borderTop:'1px solid #1e1e1e' }}>
           <div style={{
             display:'inline-flex', padding:'2px 8px', borderRadius:20,

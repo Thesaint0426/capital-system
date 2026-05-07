@@ -1,4 +1,4 @@
--- Capital Invest V2 Database Schema
+-- Capital Invest V2 Database Schema (Upgraded)
 
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'investor' CHECK (role IN ('investor', 'admin')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended')),
+  admin_note TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -43,6 +45,7 @@ CREATE TABLE IF NOT EXISTS withdrawals (
   network TEXT,
   requested_at TIMESTAMPTZ DEFAULT NOW(),
   processed_at TIMESTAMPTZ,
+  paid_at TIMESTAMPTZ,
   admin_note TEXT
 );
 
@@ -60,12 +63,22 @@ CREATE TABLE IF NOT EXISTS applications (
   reviewed_by INTEGER REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_cycles_user ON investment_cycles(user_id);
 CREATE INDEX IF NOT EXISTS idx_cycles_status ON investment_cycles(status);
 CREATE INDEX IF NOT EXISTS idx_withdrawals_user ON withdrawals(user_id);
 CREATE INDEX IF NOT EXISTS idx_withdrawals_status ON withdrawals(status);
 CREATE INDEX IF NOT EXISTS idx_applications_status ON applications(status);
+CREATE INDEX IF NOT EXISTS idx_reset_tokens ON password_reset_tokens(token);
 
 -- Default admin (password: Admin@12345)
 INSERT INTO users (name, email, password_hash, role)

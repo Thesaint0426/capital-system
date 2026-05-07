@@ -28,7 +28,8 @@ function AdminWithdrawals() {
     setProcessing(actionModal.id);
     try {
       await api.post(`/api/admin/withdrawal/${actionModal.id}/${actionModal.action}`, { admin_note: note || undefined });
-      toast.success(`Withdrawal ${actionModal.action === 'approve' ? 'approved' : 'rejected'}`);
+      const msg = { approve: 'Withdrawal approved', reject: 'Withdrawal rejected', paid: 'Marked as paid' }[actionModal.action];
+      toast.success(msg);
       setActionModal(null);
       setNote('');
       load();
@@ -150,7 +151,7 @@ function AdminWithdrawals() {
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                     <thead>
                       <tr style={{ background: '#0a0a0a', borderBottom: '1px solid #1e1e1e' }}>
-                        {['Member', 'Status', 'Amount', 'Fee', 'Net Payout', 'Network', 'Requested', 'Note'].map(h => (
+                        {['Member', 'Status', 'Amount', 'Fee', 'Net Payout', 'Network', 'Requested', 'Note', 'Action'].map(h => (
                           <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#3a3734', letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                         ))}
                       </tr>
@@ -174,7 +175,15 @@ function AdminWithdrawals() {
                             <td style={{ padding: '13px 14px', fontFamily: 'Space Mono,monospace', fontSize: 13, color: '#3ecf8e' }}>{fmt(w.net_amount)}</td>
                             <td style={{ padding: '13px 14px', fontSize: 11, color: '#524f4b' }}>{w.network || '—'}</td>
                             <td style={{ padding: '13px 14px', fontSize: 11, color: '#524f4b' }}>{fmtDate(w.requested_at)}</td>
-                            <td style={{ padding: '13px 14px', fontSize: 11, color: '#3a3734', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.admin_note || '—'}</td>
+                            <td style={{ padding: '13px 14px', fontSize: 11, color: '#3a3734', maxWidth: 130, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.admin_note || '—'}</td>
+                            <td style={{ padding: '13px 14px' }}>
+                              {w.status === 'approved' && (
+                                <button onClick={() => { setActionModal({ id: w.id, action: 'paid', name: w.user_name }); setNote(''); }}
+                                  style={{ padding: '4px 10px', background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 5, color: '#60a5fa', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'DM Sans,sans-serif', whiteSpace: 'nowrap' }}>
+                                  Mark Paid
+                                </button>
+                              )}
+                            </td>
                           </tr>
                         );
                       })}
@@ -192,11 +201,13 @@ function AdminWithdrawals() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(6px)', padding: 24 }}>
           <div style={{ background: '#0c0c0c', border: '1px solid #252525', borderRadius: 16, padding: 32, width: '100%', maxWidth: 420 }}>
             <div style={{ fontFamily: 'DM Sans,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 6 }}>
-              {actionModal.action === 'approve' ? 'Approve Withdrawal' : 'Reject Withdrawal'}
+              {actionModal.action === 'approve' ? 'Approve Withdrawal' : actionModal.action === 'paid' ? 'Mark as Paid' : 'Reject Withdrawal'}
             </div>
             <div style={{ fontSize: 13, color: '#524f4b', marginBottom: 20 }}>
               {actionModal.action === 'approve'
                 ? `Confirm approval for ${actionModal.name}. Net payout: ${fmt(actionModal.amount)}`
+                : actionModal.action === 'paid'
+                ? `Confirm that payment has been sent to ${actionModal.name}`
                 : `Reject liquidity request from ${actionModal.name}`}
             </div>
             {actionModal.action === 'approve' && (
@@ -227,11 +238,11 @@ function AdminWithdrawals() {
               <button onClick={handleAction}
                 style={{
                   padding: '10px 20px', border: 'none', borderRadius: 7, fontFamily: 'DM Sans,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                  background: actionModal.action === 'approve' ? '#00e87a' : 'rgba(248,113,113,0.1)',
-                  color: actionModal.action === 'approve' ? '#000' : '#f87171',
-                  border: actionModal.action === 'approve' ? 'none' : '1px solid rgba(248,113,113,0.2)',
+                  background: actionModal.action === 'approve' ? '#00e87a' : actionModal.action === 'paid' ? 'rgba(96,165,250,0.15)' : 'rgba(248,113,113,0.1)',
+                  color: actionModal.action === 'approve' ? '#000' : actionModal.action === 'paid' ? '#60a5fa' : '#f87171',
+                  border: actionModal.action === 'approve' ? 'none' : actionModal.action === 'paid' ? '1px solid rgba(96,165,250,0.2)' : '1px solid rgba(248,113,113,0.2)',
                 }}>
-                Confirm {actionModal.action === 'approve' ? 'Approval' : 'Rejection'}
+                Confirm {actionModal.action === 'approve' ? 'Approval' : actionModal.action === 'paid' ? 'Payment' : 'Rejection'}
               </button>
             </div>
           </div>
