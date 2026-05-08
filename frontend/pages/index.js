@@ -471,7 +471,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* EXCLUSIVITY */
+        {/* EXCLUSIVITY */}
         <section>
           <div className="lp-section">
             <div className="eyebrow reveal">Membership Model</div>
